@@ -1,0 +1,70 @@
+{
+  "acao_id": "947",
+  "url_detalhe": "https://src.ifes.edu.br/src/public/detalha-acao.xhtml?acao=947&pfdlgcid=4bbe395a-35c0-4b4a-b92a-9747b7528bfe",
+  "campus": "Serra",
+  "Processo nº": "23158.003281/2023-69",
+  "Natureza": "Extensão",
+  "Coordenador(a)": "Victorio Albani de Carvalho",
+  "Tipo ação": "Programa em Rede",
+  "Título ação": "Rede de Laboratórios de Educação em Desenvolvimento de Soluções - LEDS",
+  "Fomento": "PAEX-IFES",
+  "Ação vinculante": "-",
+  "Grande área conhecimento": "Ciências Sociais Aplicadas",
+  "Área temática principal": "Tecnologia e Produção",
+  "Área temática secundária": "Educação",
+  "Relatório aprovado": "Sim",
+  "Data último relatório": "18/12/2019",
+  "Data de cadastro": "02/12/2016",
+  "Resumo": "Atualmente há uma falta de experiencia e vivencia por parte dos alunos e professores na resolução de probelmas reais.",
+  "Campus": "Serra",
+  "acoes_vinculadas": [
+    {
+      "processo": "23153.000953/2015-14",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "LEDS (Laboratório de Educação em Desenvolvimento de Soluções) - Colatina"
+    },
+    {
+      "processo": "23158.000318/2018-30",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "LEDS – Laboratório de Extensão e Desenvolvimento de Soluções"
+    },
+    {
+      "processo": "23158.001150/2019-61",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "Sistema para predição de transtornos mentais comuns na atenção primária a saúde"
+    },
+    {
+      "processo": "23155.001055/2019-33",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "LEDS - Linhares (Laboratório de Educação em Desenvolvimentode Soluções)"
+    },
+    {
+      "processo": "23154.001230/2020-11",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "Laboratório de Extensão Maker para o Desenvolvimento de Soluções Agro,Tecnologias Educacionais e Robótica (LEM-Itapina)"
+    },
+    {
+      "processo": "23158.001821/2021-50",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "LEDS – Laboratório de Extensão em Desenvolvimento de Soluções"
+    },
+    {
+      "processo": "23153.001643/2022-46",
+      "natureza": "Extensão",
+      "tipo": "Evento",
+      "titulo": "LEDS Week"
+    },
+    {
+      "processo": "23151.002934/2022-71",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "LEDS – Laboratório de Extensão e Desenvolvimento de Soluções"
+    }
+  ]
+}

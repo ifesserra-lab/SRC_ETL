@@ -1,0 +1,88 @@
+{
+  "acao_id": "1546",
+  "url_detalhe": "https://src.ifes.edu.br/src/public/detalha-acao.xhtml?acao=1546&pfdlgcid=e9770435-1ca2-495d-9494-b74307f0cffc",
+  "campus": "Serra",
+  "Processo nº": "23158.001812/2017-31",
+  "Natureza": "Extensão",
+  "Coordenador(a)": "Alessandro Bermudes Gomes",
+  "Tipo ação": "Programa",
+  "Título ação": "Ifes para todos",
+  "Fomento": "SEM VÍNCULO",
+  "Ação vinculante": "-",
+  "Grande área conhecimento": "",
+  "Área temática principal": "Educação",
+  "Área temática secundária": "Trabalho",
+  "Relatório aprovado": "Sim",
+  "Data último relatório": "15/12/2023",
+  "Data de cadastro": "20/02/2018",
+  "Resumo": "A preocupação com o acesso e a permanência nas instituições federais de ensino profissional e tecnológico vem historicamente de uma condição assistencialista aos meninos sem família ou com família em condições financeiras e sociais precárias. Basta, para isso, voltar os olhos à história em andamento do próprio Instituto Federal no Espírito Santo.\nA preocupação com que as ações realizadas não sejam meramente assistencialistas fundamenta-se na noção de que a própria exclusão educacional é gerada amplamente por descasos de políticas públicas consistentes que enfrentem a desigualdade social historicamente constituída. A sistemática de uma política de acesso que abarque a entrada dos grupos desfavorecidos economicamente e dos alunos que estudam na escola pública é uma definição do Instituto Federal de Educação, Ciência e Tecnologia do Espírito Santo. Essa definição pela questão econômica não é a única a ser levada em consideração, mas, dado que vivemos numa sociedade capitalista, esse viés incorpora grande parte das demais questões. Não podemos nos esquecer de que vivemos em uma sociedade capitalista, que deve ser nomeada e compreendida pelo que é. Não há elegância teórica que justifique nosso distanciamento dessa realidade, Moreira, 2001. Assim, acreditamos que ao implantar o programa IFES PARA TODOS, em parceria, inicialmente, com a Rede Estadual de Ensino do Estado e dos Municípios do ES, daremos um passo importante  no intento de possibilitar a grupos socialmente excluídos e aos alunos de escolas públicas, oportunidades  de entrar e permanecer em uma escola pública de  notável excelência educacional,  tanto na formação cidadã, quanto profissionalizante.",
+  "Campus": "Serra",
+  "Grande área conhecimento (inferida)": "Ciências Humanas",
+  "_inferencia": {
+    "modelo": "mistral-small-latest",
+    "quando": "2026-07-18T09:08:55",
+    "confianca_grande_area": 0.9
+  },
+  "acoes_vinculadas": [
+    {
+      "processo": "23158.002326/2023-88",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "O IFES é o meu lugar"
+    },
+    {
+      "processo": "23158.001185/2020-56",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "LAMPEX – Laboratório Modelo de Práticas de Extensão"
+    },
+    {
+      "processo": "23158.000471/2020-31",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "Física ao Alcance de Todos"
+    },
+    {
+      "processo": "23158.000470/2020-58",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "Tutoria de Estudos Orientados: Compartilhando Saberes"
+    },
+    {
+      "processo": "23158.001963/2019-05",
+      "natureza": "Extensão",
+      "tipo": "Curso",
+      "titulo": "Ambientação Pedagógica: Didática e Técnicas de Ensino."
+    },
+    {
+      "processo": "23158.001859/2019-97",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "Tutoria de Estudos Orientados: Compartilhando Saberes"
+    },
+    {
+      "processo": "23158.001148/2019-91",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "Incluir & Multiplicar"
+    },
+    {
+      "processo": "23158.001172/2018-40",
+      "natureza": "Extensão",
+      "tipo": "Programa",
+      "titulo": "Ifes Portas Abertas"
+    },
+    {
+      "processo": "23158.001039/2018-93",
+      "natureza": "Extensão",
+      "tipo": "Curso",
+      "titulo": "Mulheres na Ciência"
+    },
+    {
+      "processo": "23158.000218/2018-11",
+      "natureza": "Extensão",
+      "tipo": "Projeto",
+      "titulo": "Ifes Portas Abertas"
+    }
+  ]
+}

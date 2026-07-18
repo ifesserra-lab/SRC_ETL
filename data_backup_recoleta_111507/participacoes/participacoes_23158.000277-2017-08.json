@@ -1,0 +1,95 @@
+{
+  "processo": "23158.000277/2017-08",
+  "total_atividades": 1,
+  "total_publico_alvo": 5,
+  "total_equipe": 2,
+  "atividades": [
+    {
+      "num": "001",
+      "atividade": "Palestra \"Inteligência Artificial para Detecção Automática de Defeitos em Processos Industriais",
+      "atividade_id": "3066",
+      "tipo": "Evento",
+      "publico_alvo": [
+        {
+          "Nome": "Claudio Leandro Nascimento Souza",
+          "Nasc.": "25/06/1996",
+          "CPF": "158.733.247-78",
+          "E-mail": "claudioleandro14@gmail.com",
+          "C.H": "1",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM",
+          "Situação": "APROVADO"
+        },
+        {
+          "Nome": "Álvaro Soldani Gondim de Freitas",
+          "Nasc.": "17/10/1997",
+          "CPF": "166.475.907-73",
+          "E-mail": "alvaro.soldani@gmail.com",
+          "C.H": "1",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM",
+          "Situação": "APROVADO"
+        },
+        {
+          "Nome": "Thiago Mascarello Vitor",
+          "Nasc.": "18/02/1997",
+          "CPF": "146.543.817-32",
+          "E-mail": "thiagomascarello2@hotmail.com",
+          "C.H": "1",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM",
+          "Situação": "APROVADO"
+        },
+        {
+          "Nome": "Davi Aragão Ascacibas",
+          "Nasc.": "17/08/1998",
+          "CPF": "148.601.877-76",
+          "E-mail": "davijf12@gmail.com",
+          "C.H": "1",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM",
+          "Situação": "APROVADO"
+        },
+        {
+          "Nome": "José Marcos Francisco da Costa Marcelino",
+          "Nasc.": "01/06/1992",
+          "CPF": "146.536.067-06",
+          "E-mail": "josemarcoscosta@live.com",
+          "C.H": "1",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM",
+          "Situação": "APROVADO"
+        }
+      ],
+      "equipe_execucao": [
+        {
+          "Nome": "Francisco de Assis Boldt",
+          "CPF": "070.945.327-25",
+          "Vínculo": "Servidor",
+          "Função": "MINISTRANTE",
+          "E-mail": "franciscoa@ifes.edu.br",
+          "C.H": "4",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM"
+        },
+        {
+          "Nome": "Richard Junior Manuel Godinez Tello",
+          "CPF": "061.569.707-03",
+          "Vínculo": "Servidor",
+          "Função": "COORDENADOR(A) ADJUNTO(A)",
+          "E-mail": "richard@ifes.edu.br",
+          "C.H": "4",
+          "Início": "01/06/2017",
+          "Término": "01/06/2017",
+          "Certificado": "SIM"
+        }
+      ]
+    }
+  ]
+}
