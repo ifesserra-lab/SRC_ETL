@@ -25,24 +25,35 @@ from .relatorio import _barras, _secao, _tile
 def agregar_rede(consolidado: dict) -> dict:
     acoes = consolidado.get("acoes", [])
 
-    titulo_by_proc, publico_by_proc = {}, {}
-    filhos = defaultdict(list)
+    publico_by_proc = {}
     for a in acoes:
-        proc = a.get("Processo nº")
-        titulo_by_proc[proc] = a.get("Título ação") or proc
-        pub = sum(1 for p in a.get("participacoes", []) if p.get("tipo", "").startswith("Público"))
-        publico_by_proc[proc] = pub
-        v = (a.get("Ação vinculante") or "").strip()
-        if v and v != "-":
-            filhos[v].append(proc)
+        publico_by_proc[a.get("Processo nº")] = sum(
+            1 for p in a.get("participacoes", []) if p.get("tipo", "").startswith("Público"))
 
-    # programas guarda-chuva
-    programas = []          # (titulo_pai, n_filhos, publico_agregado)
-    for pai, procs in filhos.items():
-        titulo_pai = pai.split(" - ", 1)[1] if " - " in pai else pai
-        programas.append((titulo_pai.strip(), len(procs),
-                          sum(publico_by_proc.get(pp, 0) for pp in procs)))
-    programas.sort(key=lambda x: (-x[1], -x[2]))
+    # programas guarda-chuva — FONTE AUTORITATIVA: campo "acoes_vinculadas"
+    # (buscado por acao_id em consulta-acao-vinculada), agrupado por processo do pai.
+    tem_autoritativo = any(a.get("acoes_vinculadas") for a in acoes)
+    programas = []          # (titulo_pai, processo_pai, n_filhos, publico_agregado)
+    if tem_autoritativo:
+        for a in acoes:
+            filhas = a.get("acoes_vinculadas") or []
+            if filhas:
+                pub = sum(publico_by_proc.get(fp.get("processo"), 0) for fp in filhas)
+                programas.append((a.get("Título ação") or a.get("Processo nº"),
+                                  a.get("Processo nº"), len(filhas), pub))
+    else:
+        # fallback (menos confiável): campo texto "Ação vinculante" das filhas, por processo do pai
+        filhos = defaultdict(list)
+        for a in acoes:
+            v = (a.get("Ação vinculante") or "").strip()
+            if v and v != "-":
+                proc_pai = v.split(" - ", 1)[0].strip()
+                filhos[(proc_pai, v.split(" - ", 1)[1].strip() if " - " in v else v)].append(
+                    a.get("Processo nº"))
+        for (proc_pai, tit_pai), procs in filhos.items():
+            programas.append((tit_pai, proc_pai, len(procs),
+                              sum(publico_by_proc.get(pp, 0) for pp in procs)))
+    programas.sort(key=lambda x: (-x[2], -x[3]))
 
     # colaboração: cpf de equipe -> conjunto de coordenadores
     cpf_coords = defaultdict(set)
@@ -75,11 +86,11 @@ def agregar_rede(consolidado: dict) -> dict:
 
     return {
         "n_programas": len(programas),
-        "maior_programa": programas[0] if programas else None,
+        "maior_programa": (programas[0][0], programas[0][2]) if programas else None,
         "n_coord_colab": len([c for c, g in grau.items() if g > 0]),
         "n_parcerias": len(pair_w),
-        "programas": [(t, n) for t, n, _ in programas[:10]],
-        "programas_publico": [(t, p) for t, n, p in sorted(programas, key=lambda x: -x[2])[:10] if p],
+        "programas": [(t, n) for t, _proc, n, _p in programas[:10]],
+        "programas_publico": [(t, p) for t, _proc, n, p in sorted(programas, key=lambda x: -x[3])[:10] if p],
         "coord_colab": coord_colab,
         "top_parcerias": top_parcerias,
         "grafo_nodes": topN,

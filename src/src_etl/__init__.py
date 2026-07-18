@@ -21,13 +21,14 @@ from .pipeline import (
     salvar_por_campus,
 )
 from .consolidar import consolidar
+from .vinculadas import enriquecer_vinculadas
 from .enriquecer import enriquecer_acoes
 from .indicadores import gerar_indicadores
 from .painel import gerar_painel
 from .relatorio import gerar_relatorio
 from .scraper import LinhaAcao, coletar_campus, listar_campi
 
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 
 __all__ = [
     "Acao",
@@ -48,6 +49,7 @@ __all__ = [
     "gerar_relatorio",
     "enriquecer_acoes",
     "consolidar",
+    "enriquecer_vinculadas",
     "gerar_indicadores",
     "gerar_painel",
     "fetch_detalhe",

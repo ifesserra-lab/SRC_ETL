@@ -30,6 +30,18 @@ class LinhaAcao:
     linha: list[str] = field(default_factory=list)
 
 
+def _dedup(linhas: list[LinhaAcao]) -> list[LinhaAcao]:
+    """Remove ações repetidas por acao_id, preservando a ordem."""
+    visto, out = set(), []
+    for ln in linhas:
+        chave = ln.acao_id or id(ln)
+        if chave in visto:
+            continue
+        visto.add(chave)
+        out.append(ln)
+    return out
+
+
 async def listar_campi(*, headless: bool = True) -> list[str]:
     """Lê os campi disponíveis no dropdown da consulta (sem 'Selecione')."""
     async with async_playwright() as p:
@@ -93,8 +105,20 @@ async def _scrape_pagina(page, log) -> list[LinhaAcao]:
 
 
 async def _proxima_pagina(page) -> None:
+    """Avança de página esperando o indicador mudar (evita re-raspar/pular)."""
+    atual = await page.locator(f"[id='{_TABELA}'] .ui-paginator-current").first.text_content()
     await page.locator(f"[id='{_TABELA}'] .ui-paginator-next").first.click()
-    await page.wait_for_timeout(1200)
+    try:
+        await page.wait_for_function(
+            """([sel, prev]) => {
+                const e = document.querySelector(sel + ' .ui-paginator-current');
+                return e && e.textContent.trim() !== prev;
+            }""",
+            arg=[f"[id='{_TABELA}']", (atual or "").strip()],
+            timeout=10000,
+        )
+    except Exception:
+        await page.wait_for_timeout(1000)
 
 
 async def _worker(browser, campus: str, quais: set[int], wid: int, log) -> list[LinhaAcao]:
@@ -146,15 +170,15 @@ async def coletar_campus(
             coletados: list[LinhaAcao] = []
             for pag in range(1, total + 1):
                 coletados.extend(await _scrape_pagina(page0, log))
-                log(f"página {pag}/{total} -> {len(coletados)} ações")
-                if max_acoes and len(coletados) >= max_acoes:
+                log(f"página {pag}/{total} -> {len(_dedup(coletados))} ações únicas")
+                if max_acoes and len(_dedup(coletados)) >= max_acoes:
                     await browser.close()
                     log(f"limite max_acoes={max_acoes} atingido")
-                    return coletados[:max_acoes]
+                    return _dedup(coletados)[:max_acoes]
                 if pag < total:
                     await _proxima_pagina(page0)
             await browser.close()
-            return coletados
+            return _dedup(coletados)
 
         # paralelo: cada worker cuida de páginas pag onde (pag-1) % workers == w
         await page0.close()
@@ -167,4 +191,4 @@ async def coletar_campus(
         ]
         partes = await asyncio.gather(*tarefas)
         await browser.close()
-        return [linha for parte in partes for linha in parte]
+        return _dedup([linha for parte in partes for linha in parte])
