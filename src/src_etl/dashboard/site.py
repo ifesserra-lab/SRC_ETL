@@ -51,6 +51,15 @@ box-shadow:0 0 0 3px color-mix(in srgb,var(--series-1) 20%,transparent)}
 .badge{display:inline-block;border:1px solid var(--grid);border-radius:6px;padding:3px 10px;
 font-size:11.5px;font-weight:500;color:var(--text-secondary);white-space:nowrap;
 background:var(--surface-1)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11.5px;font-weight:600;
+white-space:nowrap;border:1px solid transparent;line-height:1.5}
+.pill-c1{color:var(--c1);background:color-mix(in srgb,var(--c1) 12%,transparent);border-color:color-mix(in srgb,var(--c1) 28%,transparent)}
+.pill-c2{color:var(--c2);background:color-mix(in srgb,var(--c2) 12%,transparent);border-color:color-mix(in srgb,var(--c2) 28%,transparent)}
+.pill-c3{color:var(--c3);background:color-mix(in srgb,var(--c3) 14%,transparent);border-color:color-mix(in srgb,var(--c3) 30%,transparent)}
+.pill-c4{color:var(--c4);background:color-mix(in srgb,var(--c4) 12%,transparent);border-color:color-mix(in srgb,var(--c4) 28%,transparent)}
+.pill-c5{color:var(--c5);background:color-mix(in srgb,var(--c5) 12%,transparent);border-color:color-mix(in srgb,var(--c5) 28%,transparent)}
+.pill-c6{color:var(--c6);background:color-mix(in srgb,var(--c6) 12%,transparent);border-color:color-mix(in srgb,var(--c6) 28%,transparent)}
+.pill-n{color:var(--muted);background:color-mix(in srgb,var(--muted) 10%,transparent);border-color:var(--grid)}
 .tl-t{fill:var(--text-primary);font-size:14px;font-weight:600}
 .tl-s{fill:var(--muted);font-size:12px}
 .mkt{margin-top:18px;overflow:hidden}
@@ -79,6 +88,24 @@ def _tile(valor, rotulo, sub="") -> str:
     s = f'<div class="tile-sub">{escape(sub)}</div>' if sub else ""
     return (f'<div class="tile"><div class="tile-val">{valor}</div>'
             f'<div class="tile-lbl">{escape(rotulo)}</div>{s}</div>')
+
+
+def _pill_tipo(tipo) -> str:
+    """Chip colorido para o tipo da ação (cor semântica por tipo)."""
+    t = (tipo or "").strip()
+    tl = t.lower()
+    classe = ("pill-c1" if "curso" in tl else "pill-c3" if "evento" in tl
+              else "pill-c4" if "projeto" in tl else "pill-c2" if "programa" in tl
+              else "pill-c5" if ("oficina" in tl or "produto" in tl) else "pill-n")
+    return f'<span class="pill {classe}">{escape(t or "—")}</span>'
+
+
+def _pill_natureza(nat) -> str:
+    """Chip colorido para a natureza (Extensão / Ensino)."""
+    t = (nat or "").strip()
+    tl = t.lower()
+    classe = "pill-c2" if "extens" in tl else "pill-c5" if "ensino" in tl else "pill-n"
+    return f'<span class="pill {classe}">{escape(t or "—")}</span>'
 
 
 
@@ -146,7 +173,7 @@ def _pagina_acao(a: dict, slugs: dict) -> str:
     meta = f"""<div class="meta">
 <div><b>Processo</b>{escape(a.get('Processo nº') or '—')}</div>
 <div><b>Coordenador(a)</b>{_link_pessoa(a.get('Coordenador(a)'), '../', slugs)}</div>
-<div><b>Natureza / Tipo</b>{escape(a.get('Natureza') or '—')} · {escape(a.get('Tipo ação') or '—')}</div>
+<div><b>Natureza / Tipo</b>{_pill_natureza(a.get('Natureza'))} {_pill_tipo(a.get('Tipo ação'))}</div>
 <div><b>Fomento</b>{escape(a.get('Fomento') or '—')}</div>
 <div><b>Cadastro</b>{escape(a.get('Data de cadastro') or '—')}</div>
 <div><b>Relatório aprovado</b>{escape(a.get('Relatório aprovado') or '—')}</div>
@@ -225,7 +252,7 @@ def _pagina_geral(cons: dict, slugs: dict) -> str:
     rows = "".join(
         f'<tr><td><a class="lk" href="{escape(str(a.get("acao_id")))}.html">'
         f'{escape((a.get("Título ação") or "—")[:80])}</a></td>'
-        f'<td>{escape(a.get("Tipo ação") or "—")}</td>'
+        f'<td>{_pill_tipo(a.get("Tipo ação"))}</td>'
         f'<td>{_link_pessoa(a.get("Coordenador(a)"), "../", slugs)}</td>'
         f'<td>{a.get("total_participacoes", 0)}</td>'
         f'<td><span class="badge">{escape((a.get("Data de cadastro") or "—")[-4:])}</span></td></tr>'
@@ -393,6 +420,7 @@ def _pagina_busca(cons: dict, slugs: dict, pessoas: list[dict] | None = None) ->
 <script>
 const IDX = __DADOS__, PES = __PESSOAS__, ATV = __ATV__;
 const norm = s => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+function pill(t){const l=norm(t||'');const c=l.includes('curso')?'c1':l.includes('evento')?'c3':l.includes('projeto')?'c4':l.includes('programa')?'c2':(l.includes('oficina')||l.includes('produto'))?'c5':'n';return `<span class="pill pill-${c}">${t||'—'}</span>`;}
 IDX.forEach(a => a.nb = norm(a.b));
 PES.forEach(p => p.nb = norm(p.b));
 ATV.forEach(a => a.nb = norm(a.b));
@@ -414,7 +442,7 @@ function render(q){
   if(hits.length){
     h += `<div class="card" style="margin-top:14px"><p class="sec-desc">${hits.length} ação(ões) — iniciativas de extensão</p><table class="tb"><tr><th>Ação</th><th>Coordenador(a)</th><th>Tipo</th><th>Ano</th><th>Participações</th></tr>`;
     for(const a of hits)
-      h += `<tr><td><a class="lk" href="acoes/${a.id}.html">${a.t}</a></td><td>${a.cs?`<a class="lk" href="extensionistas/${a.cs}.html">${a.c}</a>`:a.c}</td><td>${a.tp}</td><td>${a.ano}</td><td>${a.n}</td></tr>`;
+      h += `<tr><td><a class="lk" href="acoes/${a.id}.html">${a.t}</a></td><td>${a.cs?`<a class="lk" href="extensionistas/${a.cs}.html">${a.c}</a>`:a.c}</td><td>${pill(a.tp)}</td><td>${a.ano}</td><td>${a.n}</td></tr>`;
     h += '</table></div>';
   }
   if(atv.length){
@@ -485,7 +513,7 @@ def _tabela_acoes(itens: list[dict], slugs: dict, extra_col: tuple[str, str] | N
         rows.append(
             f'<tr><td><a class="lk" href="acoes/{escape(str(it.get("acao_id")))}.html">'
             f'{escape((it.get("titulo") or "—")[:75])}</a></td>'
-            f'<td>{escape(it.get("tipo") or "—")}</td>'
+            f'<td>{_pill_tipo(it.get("tipo"))}</td>'
             f'<td>{_link_pessoa(it.get("coordenador"), "", slugs)}</td>'
             f'<td>{escape(it.get("ano") or "—")}</td>{extra}</tr>')
     return (f'<div class="card" style="margin-top:16px"><table class="tb" id="{tid}">'
