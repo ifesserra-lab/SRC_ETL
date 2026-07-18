@@ -39,8 +39,8 @@ src-etl-site = "src_etl.dashboard.site:_cli"
 src-etl-export = "src_etl.dashboard.export_json:_cli"
 
 [project.urls]
-Homepage = "https://github.com/ifesserra-lab/SRC_ETL"
-Repository = "https://github.com/ifesserra-lab/SRC_ETL"
+Homepage = "https://github.com/ifesserra-lab/src"
+Repository = "https://github.com/ifesserra-lab/src"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/src_etl"]

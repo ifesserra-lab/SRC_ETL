@@ -5,7 +5,7 @@ Ferramenta de **ETL e análise das ações de extensão/ensino do SRC/Ifes**
 participações (com login), enriquece categorias com IA, consolida tudo e gera
 um **painel analítico** publicável.
 
-📊 **Painel do Campus Serra:** https://ifesserra-lab.github.io/SRC_ETL/
+📊 **Painel do Campus Serra:** https://ifesserra-lab.github.io/src/
 
 ---
 
@@ -81,7 +81,7 @@ erDiagram
 ## Instalação
 
 ```bash
-pip install "git+https://github.com/ifesserra-lab/SRC_ETL.git"
+pip install "git+https://github.com/ifesserra-lab/src.git"
 playwright install chromium
 ```
 

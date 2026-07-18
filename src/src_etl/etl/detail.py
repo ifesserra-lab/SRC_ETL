@@ -10,7 +10,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 BASE = "https://src.ifes.edu.br/src/public/"
-USER_AGENT = "src-etl/0.1 (+https://github.com/ifesserra-lab/SRC_ETL)"
+USER_AGENT = "src-etl/0.1 (+https://github.com/ifesserra-lab/src)"
 
 
 def detalhe_url(acao_id: str) -> str:
