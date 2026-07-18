@@ -62,29 +62,36 @@ def _tile(valor, rotulo, sub="") -> str:
 
 
 # ------------------------------------------------------------- página por ação
-def _pagina_acao(a: dict) -> str:
-    parts = a.get("participacoes", [])
-    # agrupa por atividade
+def _agrupar_atividades(a: dict) -> dict[str, dict]:
+    """Agrupa as participações de uma ação por atividade."""
+    from collections import Counter as _C
     ativm: dict[str, dict] = {}
-    for p in parts:
+    for p in a.get("participacoes", []):
         k = p.get("atividade_id") or "?"
         m = ativm.setdefault(k, {"num": p.get("atividade_num"), "nome": p.get("atividade"),
-                                 "pub": 0, "eq": [], "aprov": 0, "cert": 0})
+                                 "pub": 0, "eq": [], "aprov": 0, "cert": 0, "situ": _C()})
         if p.get("tipo", "").startswith("Público"):
             m["pub"] += 1
-            if (p.get("Situação") or "").strip().upper() == "APROVADO":
+            situ = (p.get("Situação") or "—").strip().upper() or "—"
+            m["situ"][situ] += 1
+            if situ == "APROVADO":
                 m["aprov"] += 1
             c = (p.get("Certificado") or "").strip().lower()
             if c and c not in ("não", "nao", "-"):
                 m["cert"] += 1
         else:
             m["eq"].append(p)
+    return ativm
 
+
+def _pagina_acao(a: dict) -> str:
+    ativm = _agrupar_atividades(a)
     linhas = []
     for k, m in sorted(ativm.items(), key=lambda kv: kv[1]["num"] or ""):
         linhas.append(
             f"<tr><td>{escape(m['num'] or '—')}</td>"
-            f"<td>{escape((m['nome'] or '—')[:90])}</td>"
+            f'<td><a class="lk" href="../atividades/{escape(str(k))}.html">'
+            f"{escape((m['nome'] or '—')[:90])}</a></td>"
             f"<td>{m['pub']}</td><td>{m['aprov']}</td><td>{m['cert']}</td><td>{len(m['eq'])}</td></tr>")
     tabela_ativ = (f'<div class="card" style="margin-top:14px"><table class="tb">'
                    f'<tr><th>Nº</th><th>Atividade</th><th>Público</th><th>Aprovados</th>'
@@ -93,7 +100,7 @@ def _pagina_acao(a: dict) -> str:
 
     # equipe única (nome + função), sem PII sensível
     equipe: dict[str, set] = {}
-    for p in parts:
+    for p in a.get("participacoes", []):
         if not p.get("tipo", "").startswith("Público"):
             equipe.setdefault((p.get("Nome") or "—").strip(), set()).add(
                 (p.get("Função") or "—").strip())
@@ -126,6 +133,41 @@ def _pagina_acao(a: dict) -> str:
                 a.get("Título ação") or "Ação",
                 f"Ação do SRC/Ifes — Campus {a.get('Campus') or a.get('campus') or ''}",
                 conteudo)
+
+
+# ------------------------------------------------------------- página por atividade
+def _pagina_atividade(a: dict, aid: str, m: dict) -> str:
+    """Página de UMA atividade: contexto da ação-mãe + números + equipe nominal."""
+    situ_rows = "".join(f"<tr><td>{escape(s)}</td><td>{n}</td></tr>"
+                        for s, n in m["situ"].most_common())
+    tiles = (f'<div class="tiles">{_tile(m["pub"], "Alunos atendidos")}'
+             f'{_tile(m["aprov"], "Aprovados")}'
+             f'{_tile(m["cert"], "Certificados emitidos")}'
+             f'{_tile(len(m["eq"]), "Equipe")}</div>')
+    meta = f"""<div class="meta">
+<div><b>Ação</b><a class="lk" href="../acoes/{escape(str(a.get('acao_id')))}.html">{escape((a.get('Título ação') or '—')[:70])}</a></div>
+<div><b>Processo</b>{escape(a.get('Processo nº') or '—')}</div>
+<div><b>Coordenador(a) da ação</b>{escape(a.get('Coordenador(a)') or '—')}</div>
+<div><b>Nº da atividade</b>{escape(m['num'] or '—')}</div>
+</div>"""
+    blocos = [meta, tiles]
+    if situ_rows:
+        blocos.append(f'<div class="card" style="margin-top:14px"><h2>Situação do público-alvo</h2>'
+                      f'<table class="tb"><tr><th>Situação</th><th>Participantes</th></tr>{situ_rows}</table></div>')
+    if m["eq"]:
+        eq_rows = "".join(
+            f"<tr><td>{escape((p.get('Nome') or '—').strip())}</td>"
+            f"<td>{escape((p.get('Função') or '—').strip())}</td>"
+            f"<td>{escape((p.get('Vínculo') or '—').strip())}</td></tr>"
+            for p in sorted(m["eq"], key=lambda x: (x.get("Nome") or "")))
+        blocos.append(f'<div class="card" style="margin-top:14px"><h2>Equipe de execução</h2>'
+                      f'<table class="tb"><tr><th>Nome</th><th>Função</th><th>Vínculo</th></tr>{eq_rows}</table></div>')
+    blocos.append('<div class="pii">Público-alvo apenas como contagens — sem nomes, CPF ou '
+                  'e-mail de alunos. Equipe listada como crédito público de execução.</div>')
+    return _doc(m["nome"] or "Atividade", "../", "", "Atividade",
+                m["nome"] or "Atividade",
+                f"Atividade da ação · Campus {a.get('Campus') or a.get('campus') or ''}",
+                "".join(blocos))
 
 
 # ------------------------------------------------------------- página geral
@@ -358,10 +400,16 @@ def gerar_site(
     out = Path(out_dir)
     (out / "acoes").mkdir(parents=True, exist_ok=True)
 
-    n = 0
+    n = n_ativ = 0
+    (out / "atividades").mkdir(exist_ok=True)
     for a in cons["acoes"]:
         (out / "acoes" / f"{a.get('acao_id')}.html").write_text(_pagina_acao(a), encoding="utf-8")
         n += 1
+        for aid, m in _agrupar_atividades(a).items():
+            if aid and aid != "?":
+                (out / "atividades" / f"{aid}.html").write_text(
+                    _pagina_atividade(a, aid, m), encoding="utf-8")
+                n_ativ += 1
     (out / "acoes" / "index.html").write_text(_pagina_geral(cons), encoding="utf-8")
     busca = _pagina_busca(cons)
     (out / "index.html").write_text(busca, encoding="utf-8")   # busca é a home
@@ -381,7 +429,8 @@ def gerar_site(
             _pagina_extensionista(p, resumos.get(p["slug"])), encoding="utf-8")
     (out / "extensionistas" / "index.html").write_text(
         _pagina_extensionistas_index(pessoas), encoding="utf-8")
-    return {"paginas_acao": n, "extensionistas": len(pessoas), "out": str(out)}
+    return {"paginas_acao": n, "atividades": n_ativ,
+            "extensionistas": len(pessoas), "out": str(out)}
 
 
 def _cli(argv: list[str] | None = None) -> int:
