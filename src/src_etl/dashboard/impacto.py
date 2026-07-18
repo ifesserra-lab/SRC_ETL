@@ -176,18 +176,20 @@ def blocos_impacto(a: dict) -> tuple[str, str]:
         _tile(f'{a["cr10"]}%', "Top-10 do alcance", f'HHI {a["hhi"]}'),
     ])
     secoes = [
-        _secao("Horas-aluno por tipo de ação", _barras(a["ch_por_tipo"], unidade="h"),
-               "Esforço formativo = carga horária × nº de participações de público.",
-               explica="Soma, por tipo de ação, das horas de formação entregues: para cada "
-               "participação de público conta a carga horária (C.H) da atividade. É a métrica "
-               "de esforço/impacto usada em relatórios de extensão — mede volume de formação "
-               "efetivamente ofertado, não apenas número de pessoas."),
-        _secao("Perfil etário do público", _donut(a["idade"]),
-               "Faixas etárias das participações de público-alvo.",
-               explica="Distribui as participações por faixa de idade (calculada da data de "
-               "nascimento na data de início da atividade; a data em si nunca é exibida). "
-               "Mostra QUEM a extensão alcança — predominância de jovens (15–24) indica forte "
-               "conexão com o público estudantil e pré-universitário."),
+        _secao_par(
+            "Horas-aluno e perfil etário",
+            ("Horas-aluno por tipo de ação", _barras(a["ch_por_tipo"], unidade="h"),
+             "Esforço formativo = carga horária × nº de participações de público.",
+             "Soma, por tipo de ação, das horas de formação entregues: para cada "
+             "participação de público conta a carga horária (C.H) da atividade. É a métrica "
+             "de esforço/impacto usada em relatórios de extensão — mede volume de formação "
+             "efetivamente ofertado, não apenas número de pessoas."),
+            ("Perfil etário do público", _donut(a["idade"]),
+             "Faixas etárias das participações de público-alvo.",
+             "Distribui as participações por faixa de idade (calculada da data de "
+             "nascimento na data de início da atividade; a data em si nunca é exibida). "
+             "Mostra QUEM a extensão alcança — predominância de jovens (15–24) indica forte "
+             "conexão com o público estudantil e pré-universitário.")),
         _secao("Funil de engajamento (público → equipe)",
                _barras([("Público único", len(a.get("idade")) and 0 or 0)]) if False else
                _barras([("Viraram equipe", a["funil_conv"])], unidade=" pessoas"),

@@ -141,12 +141,19 @@ def blocos_indicadores(a: dict) -> tuple[str, str]:
     ])
 
     secoes = [
-        _secao("Alunos atendidos por ano", _barras(a["publico_por_ano"]),
-               "Alcance (participações de público) por ano de cadastro da ação.",
-               explica="Soma das participações de público-alvo agrupadas pelo ano de cadastro da "
-               "ação correspondente. Diferente do gráfico 'ações por ano' (que conta cadastros), "
-               "este mede PESSOAS alcançadas ao longo do tempo — uma ação só, se for grande, pode "
-               "dominar o ano. Base: participações (a mesma pessoa em 2 atividades conta 2)."),
+        _secao_par(
+            "Alunos atendidos: por ano e por coordenador(a)",
+            ("Alunos atendidos por ano", _barras(a["publico_por_ano"]),
+             "Alcance (participações de público) por ano de cadastro da ação.",
+             "Soma das participações de público-alvo agrupadas pelo ano de cadastro da "
+             "ação correspondente. Diferente do gráfico 'ações por ano' (que conta cadastros), "
+             "este mede PESSOAS alcançadas ao longo do tempo — uma ação só, se for grande, pode "
+             "dominar o ano. Base: participações (a mesma pessoa em 2 atividades conta 2)."),
+            ("Top 10 coordenadores por alunos atendidos", _barras(a["publico_por_coord"]),
+             "Impacto por coordenador — soma do público-alvo (≠ nº de ações).",
+             "Soma das participações de público-alvo de todas as ações de cada "
+             "coordenador(a). Complementa o ranking por nº de ações: alguém com poucas ações "
+             "grandes pode ter mais impacto de alcance do que alguém com muitas ações pequenas.")),
         _secao_par(
             "Recorrência e tamanho de turma",
             ("Recorrência de participação", _donut(a["recorrencia"]),
@@ -161,11 +168,6 @@ def blocos_indicadores(a: dict) -> tuple[str, str]:
              "de participantes de público-alvo que registrou. Mostra o formato típico de "
              "atendimento: muitas turmas pequenas (1–10, 11–25) indicam trabalho de proximidade; "
              "faixas 100+ são eventos de massa.")),
-        _secao("Top 10 coordenadores por alunos atendidos", _barras(a["publico_por_coord"]),
-               "Impacto por coordenador — soma do público-alvo (≠ nº de ações).",
-               explica="Soma das participações de público-alvo de todas as ações de cada "
-               "coordenador(a). Complementa o ranking por nº de ações: alguém com poucas ações "
-               "grandes pode ter mais impacto de alcance do que alguém com muitas ações pequenas."),
         _secao_par(
             "Taxa de aprovação e de certificação por tipo",
             ("Taxa de aprovação por tipo de ação", _barras(a["aprovado_por_tipo"], unidade="%"),
