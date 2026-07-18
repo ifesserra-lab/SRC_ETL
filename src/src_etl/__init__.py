@@ -20,11 +20,12 @@ from .pipeline import (
     salvar_json_por_acao,
     salvar_por_campus,
 )
+from .consolidar import consolidar
 from .enriquecer import enriquecer_acoes
 from .relatorio import gerar_relatorio
 from .scraper import LinhaAcao, coletar_campus, listar_campi
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 __all__ = [
     "Acao",
@@ -44,6 +45,7 @@ __all__ = [
     "carregar_credenciais",
     "gerar_relatorio",
     "enriquecer_acoes",
+    "consolidar",
     "fetch_detalhe",
     "parse_detalhe",
     "__version__",
