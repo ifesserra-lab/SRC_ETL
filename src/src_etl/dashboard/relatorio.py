@@ -334,6 +334,18 @@ def _secao(titulo: str, corpo: str, desc: str = "", explica: str = "") -> str:
     return f'<section><h2>{escape(titulo)}</h2>{d}<div class="card">{corpo}{e}</div></section>'
 
 
+def _secao_par(titulo: str, a: tuple, b: tuple) -> str:
+    """Uma seção com DOIS gráficos lado a lado (economiza espaço).
+    Cada item = (subtitulo, corpo_html, desc, explica)."""
+    def _item(sub, corpo, desc="", explica=""):
+        d = f'<p class="sec-desc" style="margin:0 0 8px">{escape(desc)}</p>' if desc else ""
+        ex = (f'<details class="explica"><summary>O que significa?</summary>'
+              f'<p>{escape(explica)}</p></details>' if explica else "")
+        return (f'<div class="par2-item"><h3 class="par2-h">{escape(sub)}</h3>{d}{corpo}{ex}</div>')
+    return (f'<section><h2>{escape(titulo)}</h2>'
+            f'<div class="card"><div class="par2">{_item(*a)}{_item(*b)}</div></div></section>')
+
+
 # ------------------------------------------------------------------------ HTML
 _CSS = """
 :root{color-scheme:light;--plane:#f9f9f7;--surface-1:#fcfcfb;--text-primary:#0b0b0b;
@@ -430,19 +442,21 @@ def blocos_relatorio(a: dict) -> tuple[str, str]:
                "responsáveis. Ações sem nenhum participante registrado (público e equipe zerados) "
                "são EXCLUÍDAS desta contagem, para medir produção efetiva e não apenas cadastros. "
                "Coordenador é dado público do sistema."),
-        _secao("Grande área do conhecimento", _donut(a["grande_area"]),
-               f'{a["n_ga_inferida"]} categorias inferidas por IA (Mistral) a partir do resumo.',
-               explica="Classificação CNPq da ação (Engenharias, Ciências Humanas etc.). "
-               "Como mais da metade dos cadastros originais deixou o campo vazio, as categorias "
-               "faltantes foram deduzidas por IA (Mistral) lendo título + resumo da ação, sempre "
-               "escolhendo dentro da tabela oficial e só quando a confiança é ≥ 60%. O valor "
-               "original nunca é sobrescrito: a inferência fica marcada no dado como '(inferida)'."),
-        _secao("Área temática principal", _donut(a["area_tematica"]),
-               f'{a["n_at_inferida"]} categorias inferidas por IA (Mistral) a partir do resumo.',
-               explica="Área temática da extensão (Educação, Saúde, Cultura, Tecnologia e Produção...), "
-               "conforme o dropdown oficial do SRC. Mesma regra da grande área: vazios foram "
-               "completados por IA com base no resumo, marcados como inferidos e limitados às "
-               "categorias que já existem no sistema."),
+        _secao_par(
+            "Grande área e área temática",
+            ("Grande área do conhecimento", _donut(a["grande_area"]),
+             f'{a["n_ga_inferida"]} categorias inferidas por IA (Mistral) a partir do resumo.',
+             "Classificação CNPq da ação (Engenharias, Ciências Humanas etc.). "
+             "Como mais da metade dos cadastros originais deixou o campo vazio, as categorias "
+             "faltantes foram deduzidas por IA (Mistral) lendo título + resumo da ação, sempre "
+             "escolhendo dentro da tabela oficial e só quando a confiança é ≥ 60%. O valor "
+             "original nunca é sobrescrito: a inferência fica marcada no dado como '(inferida)'."),
+            ("Área temática principal", _donut(a["area_tematica"]),
+             f'{a["n_at_inferida"]} categorias inferidas por IA (Mistral) a partir do resumo.',
+             "Área temática da extensão (Educação, Saúde, Cultura, Tecnologia e Produção...), "
+             "conforme o dropdown oficial do SRC. Mesma regra da grande área: vazios foram "
+             "completados por IA com base no resumo, marcados como inferidos e limitados às "
+             "categorias que já existem no sistema.")),
         _secao("Relatório aprovado", _donut(a["relatorio"]),
                "Ações com relatório final aprovado.",
                explica="Situação do relatório final da ação no SRC: 'Sim' significa relatório "
@@ -459,17 +473,20 @@ def blocos_relatorio(a: dict) -> tuple[str, str]:
                    "únicas — a mesma pessoa em duas atividades conta duas vezes aqui. Títulos "
                    "repetidos (ex.: 'Ifes Portas Abertas') são edições distintas, com processos "
                    "diferentes."),
-            _secao("Situação dos participantes", _donut(a["situacao"]),
-                   "Situação registrada do público-alvo.",
-                   explica="Status final de cada participação de público-alvo conforme lançado no "
-                   "SRC: APROVADO (concluiu com êxito), CURSANDO (em andamento), REPROVADO (não "
-                   "atingiu os critérios). A base é participações, não pessoas — uma pessoa pode "
-                   "estar APROVADO numa atividade e CURSANDO em outra."),
-            _secao("Certificação do público-alvo", _donut(a["certificado"]),
-                   explica="Percentual das participações de público-alvo com certificado emitido "
-                   "no SRC. 'Não emitido' inclui em andamento (ainda sem direito), reprovados e "
-                   "casos onde o coordenador não emitiu. É indicador de entrega formal do "
-                   "benefício ao participante."),
+            _secao_par(
+                "Situação e certificação do público-alvo",
+                ("Situação dos participantes", _donut(a["situacao"]),
+                 "Situação registrada do público-alvo.",
+                 "Status final de cada participação de público-alvo conforme lançado no "
+                 "SRC: APROVADO (concluiu com êxito), CURSANDO (em andamento), REPROVADO (não "
+                 "atingiu os critérios). A base é participações, não pessoas — uma pessoa pode "
+                 "estar APROVADO numa atividade e CURSANDO em outra."),
+                ("Certificação do público-alvo", _donut(a["certificado"]),
+                 "Participações com certificado emitido.",
+                 "Percentual das participações de público-alvo com certificado emitido "
+                 "no SRC. 'Não emitido' inclui em andamento (ainda sem direito), reprovados e "
+                 "casos onde o coordenador não emitiu. É indicador de entrega formal do "
+                 "benefício ao participante.")),
             _secao("Equipe executora por função (top 8)", _barras(a["funcao"]),
                    explica="Composição de quem EXECUTA as ações, pela função declarada de cada "
                    "vínculo de equipe: bolsistas, voluntários, coordenador, professores etc. "
