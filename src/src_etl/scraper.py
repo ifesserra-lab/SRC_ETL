@@ -87,30 +87,37 @@ async def coletar_campus(
         log(f"{campus}: {total_paginas} páginas")
 
         for pag in range(1, total_paginas + 1):
-            botoes = page.locator(f"[id='{_TABELA}'] tbody tr button[title='Detalhes']")
-            n = await botoes.count()
+            await page.wait_for_selector(
+                f"[id='{_TABELA}'] tbody tr button[title='Detalhes']", timeout=20000)
+            # captura os ids dos botões da página ANTES de clicar (evita corrida com re-render)
+            ids = await page.eval_on_selector_all(
+                f"[id='{_TABELA}'] tbody tr button[title='Detalhes']", "els=>els.map(e=>e.id)")
 
-            for i in range(n):
-                botao = botoes.nth(i)
-                bid = await botao.get_attribute("id")
+            for bid in ids:
                 dlg = f"[id='{bid}_dlg']"
+                try:
+                    botao = page.locator(f"[id='{bid}']")
+                    linha = botao.locator("xpath=ancestor::tr[1]")
+                    resumo = [c.strip() for c in await linha.locator("td").all_text_contents()]
 
-                linha = botao.locator("xpath=ancestor::tr[1]")
-                resumo = [c.strip() for c in await linha.locator("td").all_text_contents()]
+                    await botao.click()
+                    await page.wait_for_selector(f"{dlg} iframe", state="attached", timeout=15000)
+                    src = await page.locator(f"{dlg} iframe").get_attribute("src")
+                    acao_id = parse_qs(urlparse(src).query).get("acao", [None])[0]
+                    coletados.append(
+                        LinhaAcao(acao_id=acao_id, url_detalhe=urljoin(BASE, src), linha=resumo))
 
-                await botao.click()
-                await page.wait_for_selector(f"{dlg} iframe", state="attached", timeout=15000)
-                src = await page.locator(f"{dlg} iframe").get_attribute("src")
-                acao_id = parse_qs(urlparse(src).query).get("acao", [None])[0]
-
-                coletados.append(
-                    LinhaAcao(acao_id=acao_id, url_detalhe=urljoin(BASE, src), linha=resumo)
-                )
-
-                # fecha dialog e espera overlay sumir
-                await page.locator(f"{dlg} .ui-dialog-titlebar-close").click()
-                await page.wait_for_selector(dlg, state="hidden", timeout=10000)
-                await page.wait_for_selector(".ui-widget-overlay", state="hidden", timeout=10000)
+                    await page.locator(f"{dlg} .ui-dialog-titlebar-close").click()
+                    await page.wait_for_selector(dlg, state="hidden", timeout=10000)
+                    await page.wait_for_selector(".ui-widget-overlay", state="hidden", timeout=10000)
+                except Exception as e:  # uma linha ruim não derruba o crawl
+                    log(f"  ! falha na linha {bid}: {str(e)[:80]}")
+                    # tenta fechar qualquer dialog/overlay preso
+                    try:
+                        await page.keyboard.press("Escape")
+                        await page.wait_for_timeout(400)
+                    except Exception:
+                        pass
 
                 if max_acoes and len(coletados) >= max_acoes:
                     await browser.close()
