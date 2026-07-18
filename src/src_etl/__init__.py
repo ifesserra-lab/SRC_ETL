@@ -20,9 +20,10 @@ from .pipeline import (
     salvar_json_por_acao,
     salvar_por_campus,
 )
+from .relatorio import gerar_relatorio
 from .scraper import LinhaAcao, coletar_campus, listar_campi
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "Acao",
@@ -40,6 +41,7 @@ __all__ = [
     "listar_campi",
     "coletar_participacoes",
     "carregar_credenciais",
+    "gerar_relatorio",
     "fetch_detalhe",
     "parse_detalhe",
     "__version__",
