@@ -426,24 +426,25 @@ def blocos_relatorio(a: dict) -> tuple[str, str]:
              "Projeto = ação com início/fim e objetivos próprios; Curso = formação com carga "
              "horária e turma; Evento = atividade pontual (palestra, semana, feira). "
              "A leitura conjunta com a natureza mostra COMO o campus atua, não só quanto.")),
-        _secao("Fomento (top 8)", _barras(a["fomento"]),
-               "Fonte de fomento vinculada à ação.",
-               explica="Origem do apoio financeiro declarada no cadastro (FAPES, PAEX-IFES, "
-               "PRONATEC etc.). 'SEM VÍNCULO' significa que a ação não declarou fonte de fomento — "
-               "geralmente executada só com recursos próprios/voluntariado. Percentual alto de "
-               "SEM VÍNCULO sinaliza baixa captação de recursos externos."),
+        _secao_par(
+            "Fomento e relatório final",
+            ("Fomento (top 8)", _barras(a["fomento"]),
+             "Fonte de fomento vinculada à ação.",
+             "Origem do apoio financeiro declarada no cadastro (FAPES, PAEX-IFES, "
+             "PRONATEC etc.). 'SEM VÍNCULO' significa que a ação não declarou fonte de fomento — "
+             "geralmente executada só com recursos próprios/voluntariado. Percentual alto de "
+             "SEM VÍNCULO sinaliza baixa captação de recursos externos."),
+            ("Relatório aprovado", _donut(a["relatorio"]),
+             "Ações com relatório final aprovado.",
+             "Situação do relatório final da ação no SRC: 'Sim' significa relatório "
+             "entregue e aprovado; 'Não' inclui ações em andamento, encerradas sem relatório ou "
+             "com relatório pendente. É um termômetro de conclusão formal do ciclo da ação.")),
         _secao("Ações por ano de cadastro", _linha(a["anos"]),
                "Volume de ações cadastradas por ano.",
                explica="Quantidade de ações registradas no SRC em cada ano (pela data de cadastro, "
                "não pela data de execução). Mostra a tendência histórica de produção do campus. "
                "Atenção: o ano corrente sempre parece menor porque ainda está em curso, e quedas "
                "em 2020–2021 refletem a pandemia."),
-        _secao("Top 10 coordenadores por nº de ações", _barras(a["coordenadores"]),
-               "Proponentes mais recorrentes — contando apenas ações com participação registrada.",
-               explica="Ranking dos coordenadores(as) pelo número de ações em que constam como "
-               "responsáveis. Ações sem nenhum participante registrado (público e equipe zerados) "
-               "são EXCLUÍDAS desta contagem, para medir produção efetiva e não apenas cadastros. "
-               "Coordenador é dado público do sistema."),
         _secao_par(
             "Grande área e área temática",
             ("Grande área do conhecimento", _donut(a["grande_area"]),
@@ -459,22 +460,25 @@ def blocos_relatorio(a: dict) -> tuple[str, str]:
              "conforme o dropdown oficial do SRC. Mesma regra da grande área: vazios foram "
              "completados por IA com base no resumo, marcados como inferidos e limitados às "
              "categorias que já existem no sistema.")),
-        _secao("Relatório aprovado", _donut(a["relatorio"]),
-               "Ações com relatório final aprovado.",
-               explica="Situação do relatório final da ação no SRC: 'Sim' significa relatório "
-               "entregue e aprovado; 'Não' inclui ações em andamento, encerradas sem relatório ou "
-               "com relatório pendente. É um termômetro de conclusão formal do ciclo da ação."),
     ]
     # seções de participação (só quando há dados coletados)
     if a["n_processos_part"]:
         secoes += [
-            _secao("Top 10 ações por alunos atendidos", _barras(a["top_publico"]),
-                   "Ações com maior público-alvo (participações).",
-                   explica="Soma, por ação, de todas as pessoas registradas como público-alvo nas "
-                   "suas atividades. Mede alcance bruto (inscrições/atendimentos), não pessoas "
-                   "únicas — a mesma pessoa em duas atividades conta duas vezes aqui. Títulos "
-                   "repetidos (ex.: 'Ifes Portas Abertas') são edições distintas, com processos "
-                   "diferentes."),
+            _secao_par(
+                "Top 10 — coordenadores e ações",
+                ("Coordenadores por nº de ações", _barras(a["coordenadores"]),
+                 "Proponentes mais recorrentes — só ações com participação registrada.",
+                 "Ranking dos coordenadores(as) pelo número de ações em que constam como "
+                 "responsáveis. Ações sem nenhum participante registrado (público e equipe zerados) "
+                 "são EXCLUÍDAS desta contagem, para medir produção efetiva e não apenas cadastros. "
+                 "Coordenador é dado público do sistema."),
+                ("Ações por alunos atendidos", _barras(a["top_publico"]),
+                 "Ações com maior público-alvo (participações).",
+                 "Soma, por ação, de todas as pessoas registradas como público-alvo nas "
+                 "suas atividades. Mede alcance bruto (inscrições/atendimentos), não pessoas "
+                 "únicas — a mesma pessoa em duas atividades conta duas vezes aqui. Títulos "
+                 "repetidos (ex.: 'Ifes Portas Abertas') são edições distintas, com processos "
+                 "diferentes.")),
             _secao_par(
                 "Situação e certificação do público-alvo",
                 ("Situação dos participantes", _donut(a["situacao"]),
