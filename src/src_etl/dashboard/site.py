@@ -559,24 +559,52 @@ def _pagina_sem_participacao(cons: dict, slugs: dict) -> str:
                 tabela + ranking)
 
 
+def _tabela_pend(itens: list[dict], slugs: dict, tid: str) -> str:
+    """Tabela de pendências: Ação · Tipo · Coord · Ano · Público · Equipe · Últ. relatório · Modelo."""
+    cab = ("<tr><th>Ação</th><th>Tipo</th><th>Coordenador(a)</th><th>Ano</th>"
+           "<th>Público</th><th>Equipe</th><th>Últ. relatório</th><th>Modelo de relatório</th></tr>")
+    rows = []
+    for it in itens:
+        aid = escape(str(it.get("acao_id")))
+        rows.append(
+            f'<tr><td><a class="lk" href="acoes/{aid}.html">{escape((it.get("titulo") or "—")[:70])}</a></td>'
+            f'<td>{_pill_tipo(it.get("tipo"))}</td>'
+            f'<td>{_link_pessoa(it.get("coordenador"), "", slugs)}</td>'
+            f'<td>{escape(it.get("ano") or "—")}</td>'
+            f'<td>{it.get("pub", 0)}</td><td>{it.get("eq", 0)}</td>'
+            f'<td>{escape(it.get("ultimo") or "—")}</td>'
+            f'<td class="nowrap"><a class="lk" href="relatorios-odt/{aid}.pdf">PDF</a>'
+            f' · <a class="lk" href="relatorios-odt/{aid}.odt">ODT</a></td></tr>')
+    return (f'<div class="card" style="margin-top:16px"><table class="tb" id="{tid}">'
+            f'{cab}{"".join(rows)}</table></div>')
+
+
 def _pagina_pendencias(cons: dict, slugs: dict) -> str:
     itens = []
     for a in cons["acoes"]:
-        if (a.get("Relatório aprovado") or "").strip().lower() != "sim":
-            itens.append({"acao_id": a.get("acao_id"),
-                          "titulo": a.get("Título ação"),
-                          "tipo": a.get("Tipo ação"),
-                          "coordenador": (a.get("Coordenador(a)") or "—").strip(),
-                          "ano": (a.get("Data de cadastro") or "")[-4:],
-                          "ultimo": a.get("Data último relatório") or "nunca enviado"})
+        if (a.get("Relatório aprovado") or "").strip().lower() == "sim":
+            continue
+        pub, eq = set(), set()
+        for p in a.get("participacoes", []):
+            if (p.get("tipo") or "").startswith("Públic"):
+                pid = p.get("CPF") or p.get("Nome")
+                if pid:
+                    pub.add(pid)
+            else:
+                nm = (p.get("Nome") or "").strip()
+                if nm:
+                    eq.add(nm)
+        itens.append({"acao_id": a.get("acao_id"), "titulo": a.get("Título ação"),
+                      "tipo": a.get("Tipo ação"),
+                      "coordenador": (a.get("Coordenador(a)") or "—").strip(),
+                      "ano": (a.get("Data de cadastro") or "")[-4:],
+                      "ultimo": a.get("Data último relatório") or "nunca enviado",
+                      "pub": len(pub), "eq": len(eq)})
     itens.sort(key=lambda x: (x["coordenador"], x["ano"]))
-    # ranking por coordenador
-    cont = Counter(i["coordenador"] for i in itens)
+    com = [x for x in itens if x["pub"] + x["eq"] > 0]
+    zero = [x for x in itens if x["pub"] + x["eq"] == 0]
     top = "".join(f'<span class="badge" style="margin:3px">{escape(n)}: {q}</span>'
-                  for n, q in cont.most_common(12))
-    tabela = _com_busca("tb-pend", "Filtrar por ação, coordenador(a), tipo ou ano...",
-                        _tabela_acoes(itens, slugs, ("Últ. relatório", "ultimo"),
-                                      tid="tb-pend", relatorio=True))
+                  for n, q in Counter(i["coordenador"] for i in itens).most_common(12))
     ajuda = ('<div class="pii" style="margin-top:0">'
              '<b>Como regularizar.</b> Cada linha traz o <b>Relatório de Ação de Extensão</b> '
              '(modelo oficial da PROEX, ON CAEx 01-2020) já <b>pré-preenchido</b> com os dados do '
@@ -586,11 +614,22 @@ def _pagina_pendencias(cons: dict, slugs: dict) -> str:
              '1º/nov e 15/dez. '
              '<a class="lk" href="https://forms.office.com/r/m73RLCBx5S" target="_blank" rel="noopener">'
              'Formulário eletrônico da PROEX ↗</a></div>')
+    sec_com = (f'<section style="margin-top:18px"><h2>Com participação registrada ({len(com)})</h2>'
+               '<p class="sec-desc">Ações que têm público-alvo e/ou equipe no SRC, mas ainda '
+               'sem relatório final aprovado — prontas para gerar o relatório.</p>'
+               + _com_busca("tb-pend", "Filtrar por ação, coordenador(a), tipo ou ano...",
+                            _tabela_pend(com, slugs, "tb-pend")) + '</section>')
+    sec_zero = (f'<section style="margin-top:26px"><h2>Sem participação registrada ({len(zero)})</h2>'
+                '<p class="sec-desc">Ações pendentes com <b>público = 0 e equipe = 0</b> no SRC — '
+                'antes do relatório, é preciso <b>registrar os participantes</b> (ou a ação não foi '
+                'executada). Veja também a página <a class="lk" href="sem-participacao.html">Sem participações</a>.</p>'
+                + _com_busca("tb-pend0", "Filtrar por ação, coordenador(a), tipo ou ano...",
+                             _tabela_pend(zero, slugs, "tb-pend0")) + '</section>') if zero else ''
     return _doc("Pendências de relatório — Campus Serra", "", "pendencias-relatorio.html",
                 "Pendências", f"Pendências de relatório ({len(itens)})",
                 "Ações sem relatório final aprovado no SRC (inclui ações em andamento) — "
                 "com o(a) coordenador(a) responsável",
-                f'<div class="card">{top}</div>{ajuda}{tabela}')
+                f'<div class="card">{top}</div>{ajuda}{sec_com}{sec_zero}')
 
 
 # ------------------------------------------------------------- dados abertos
