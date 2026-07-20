@@ -135,6 +135,9 @@ def _preencher_doc(a: dict, saida: Path, sugestao: str = "") -> dict:
             cel = rows[2].getElementsByType(TableCell)
             if cel and not teletype.extractText(cel[0]).strip():
                 set_cell(cel[0], d["atividade_nome"])
+            # ação com 1 atividade: o relato/resumo da ação vira o relato da execução
+            if len(cel) > 1 and d["resumo"] and not teletype.extractText(cel[1]).strip():
+                set_cell(cel[1], d["resumo"])
     saida.parent.mkdir(parents=True, exist_ok=True)
     doc.save(str(saida))
     return d
