@@ -22,7 +22,7 @@ from pathlib import Path
 from .painel import HORIZON_CSS, montar_shell
 from .relatorio import _barras, _donut, _tile as _tiler, _secao, _ranking_coord
 from .jornada import agregar_jornada, svg_curva_fase, svg_funil, svg_timeline
-from .temas import agregar_temas, temas_por_pessoa, _norm as _norm_tema
+from .temas import agregar_temas, temas_por_pessoa, descrever_temas, _norm as _norm_tema
 
 _EXTRA_CSS = """
 table.tb{width:100%;border-collapse:collapse;font-size:13px}
@@ -575,24 +575,24 @@ def _tabela_pend(itens: list[dict], slugs: dict, tid: str) -> str:
             f'<td class="nowrap">{escape(it.get("termino") or "—")}</td>'
             f'<td>{it.get("pub", 0)}</td><td>{it.get("eq", 0)}</td>'
             f'<td>{escape(it.get("ultimo") or "—")}</td>'
-            f'<td class="nowrap"><a class="lk" href="relatorios-odt/{aid}.pdf">PDF</a>'
-            f' · <a class="lk" href="relatorios-odt/{aid}.odt">ODT</a></td></tr>')
+            + (f'<td class="nowrap"><a class="lk" href="relatorios-odt/{aid}.pdf">PDF</a>'
+               f' · <a class="lk" href="relatorios-odt/{aid}.odt">ODT</a></td></tr>'
+               if it.get("pendente") else '<td class="nowrap">—</td></tr>'))
     return (f'<div class="card" style="margin-top:16px"><table class="tb" id="{tid}">'
             f'{cab}{"".join(rows)}</table></div>')
 
 
 def _pagina_pendencias(cons: dict, slugs: dict) -> str:
+    """Página única: pendências de relatório + ações sem participação registrada."""
+    from datetime import datetime as _dt
+
+    def _d(s):
+        try:
+            return _dt.strptime((s or "").strip(), "%d/%m/%Y")
+        except (ValueError, AttributeError):
+            return None
     itens = []
     for a in cons["acoes"]:
-        if (a.get("Relatório aprovado") or "").strip().lower() == "sim":
-            continue
-        from datetime import datetime as _dt
-
-        def _d(s):
-            try:
-                return _dt.strptime((s or "").strip(), "%d/%m/%Y")
-            except (ValueError, AttributeError):
-                return None
         pub, eq = set(), set()
         inis, terms = [], []
         for p in a.get("participacoes", []):
@@ -616,38 +616,38 @@ def _pagina_pendencias(cons: dict, slugs: dict) -> str:
                       "inicio": min(inis).strftime("%d/%m/%Y") if inis else "",
                       "termino": max(terms).strftime("%d/%m/%Y") if terms else "",
                       "ultimo": a.get("Data último relatório") or "nunca enviado",
+                      "pendente": (a.get("Relatório aprovado") or "").strip().lower() != "sim",
                       "pub": len(pub), "eq": len(eq)})
     itens.sort(key=lambda x: (x["coordenador"], x["ano"]))
-    com = [x for x in itens if x["pub"] + x["eq"] > 0]
+    com = [x for x in itens if x["pendente"] and x["pub"] + x["eq"] > 0]
     zero = [x for x in itens if x["pub"] + x["eq"] == 0]
     top = "".join(f'<span class="badge" style="margin:3px">{escape(n)}: {q}</span>'
-                  for n, q in Counter(i["coordenador"] for i in itens).most_common(12))
+                  for n, q in Counter(i["coordenador"] for i in itens if i["pendente"]).most_common(12))
     ajuda = ('<div class="pii" style="margin-top:0">'
-             '<b>Como regularizar.</b> Cada linha traz o <b>Relatório de Ação de Extensão</b> '
-             '(modelo oficial da PROEX, ON CAEx 01-2020) já <b>pré-preenchido</b> com os dados do '
-             'SRC (título, coordenador(a), datas, área e nº de participantes) e traz uma '
+             '<b>Como regularizar.</b> Cada linha das pendências traz o <b>Relatório de Ação de '
+             'Extensão</b> (modelo oficial da PROEX, ON CAEx 01-2020) já <b>pré-preenchido</b> com os '
+             'dados do SRC (título, coordenador(a), datas, área e nº de participantes) e uma '
              '<b>sugestão de rascunho</b> no campo "Resultados e impactos" (gerada por IA — '
              '<b>revise antes de enviar</b>) — baixe em <b>PDF</b> ou <b>ODT</b>, complete os '
-             'campos qualitativos e entregue à CGAEx. '
-             'Prazo: relatório final em até 30 dias após o término; parcial, anualmente entre '
-             '1º/nov e 15/dez. '
+             'campos qualitativos e entregue à CGAEx. Prazo: relatório final em até 30 dias após o '
+             'término; parcial, anualmente entre 1º/nov e 15/dez. '
              '<a class="lk" href="https://forms.office.com/r/m73RLCBx5S" target="_blank" rel="noopener">'
              'Formulário eletrônico da PROEX ↗</a></div>')
-    sec_com = (f'<section style="margin-top:18px"><h2>Com participação registrada ({len(com)})</h2>'
-               '<p class="sec-desc">Ações que têm público-alvo e/ou equipe no SRC, mas ainda '
-               'sem relatório final aprovado — prontas para gerar o relatório.</p>'
+    sec_com = (f'<section style="margin-top:18px"><h2>Pendências de relatório — com participação ({len(com)})</h2>'
+               '<p class="sec-desc">Ações com público-alvo e/ou equipe no SRC, ainda sem relatório '
+               'final aprovado — prontas para gerar o relatório.</p>'
                + _com_busca("tb-pend", "Filtrar por ação, coordenador(a), tipo ou ano...",
                             _tabela_pend(com, slugs, "tb-pend")) + '</section>')
     sec_zero = (f'<section style="margin-top:26px"><h2>Sem participação registrada ({len(zero)})</h2>'
-                '<p class="sec-desc">Ações pendentes com <b>público = 0 e equipe = 0</b> no SRC — '
-                'antes do relatório, é preciso <b>registrar os participantes</b> (ou a ação não foi '
-                'executada). Veja também a página <a class="lk" href="sem-participacao.html">Sem participações</a>.</p>'
+                '<p class="sec-desc">Ações com <b>público = 0 e equipe = 0</b> no SRC — antes do '
+                'relatório, é preciso <b>registrar os participantes</b> (ou a ação não chegou a ser '
+                'executada). O modelo de relatório só aparece quando a ação está pendente.</p>'
                 + _com_busca("tb-pend0", "Filtrar por ação, coordenador(a), tipo ou ano...",
                              _tabela_pend(zero, slugs, "tb-pend0")) + '</section>') if zero else ''
-    return _doc("Pendências de relatório — Campus Serra", "", "pendencias-relatorio.html",
-                "Pendências", f"Pendências de relatório ({len(itens)})",
-                "Ações sem relatório final aprovado no SRC (inclui ações em andamento) — "
-                "com o(a) coordenador(a) responsável",
+    return _doc("Pendências e ações sem participação — Campus Serra", "", "pendencias-relatorio.html",
+                "Pendências", f"Pendências e ações sem participação",
+                "Ações sem relatório final aprovado e/ou sem participantes registrados no SRC — "
+                "com o(a) coordenador(a) responsável e o modelo de relatório da PROEX",
                 f'<div class="card">{top}</div>{ajuda}{sec_com}{sec_zero}')
 
 
@@ -1034,8 +1034,9 @@ def _pagina_jornada(cons: dict, formandos_dir: str) -> str:
 
 
 # ------------------------------------------------------------- orquestração
-def _pagina_temas(cons: dict, slugs: dict) -> str:
+def _pagina_temas(cons: dict, slugs: dict, descricoes: dict | None = None) -> str:
     """Página Temas & Clusters: temas do texto das ações × público × coordenadores."""
+    descricoes = descricoes or {}
     temas = agregar_temas(cons, slugs)
     total_at = sum(t["publico"] for t in temas) or 1
     total_pe = sum(t["pessoas"] for t in temas) or 1
@@ -1060,6 +1061,9 @@ def _pagina_temas(cons: dict, slugs: dict) -> str:
             f'<b>{fmt(t["pessoas"])}</b> pessoas distintas ({t["pessoas"]/total_pe*100:.0f}%)</span></div>'
             + f'<div class="bt" style="background:var(--parchment);border-radius:6px;height:8px;margin:8px 0 12px">'
             f'<span style="display:block;height:100%;width:{barw:.1f}%;background:var(--series-1);border-radius:6px"></span></div>'
+            + (f'<p style="margin:0 0 10px;font-size:14px;line-height:1.55">{escape(descricoes[t["tema"]])} '
+               f'<small style="color:var(--muted)">(resumo por IA)</small></p>'
+               if descricoes.get(t["tema"]) else "")
             + f'<p class="sec-desc" style="margin:0 0 4px"><b>Coordenadores:</b> {coords or "—"}</p>'
             + f'<p class="sec-desc" style="margin:8px 0 4px"><b>Exemplos:</b></p><ul style="margin:0 0 0 18px;font-size:13px">{exs}</ul>'
             + '</div>')
@@ -1109,9 +1113,16 @@ def gerar_site(
     busca = _pagina_busca(cons, slugs, pessoas)
     (out / "index.html").write_text(busca, encoding="utf-8")   # busca é a home
     (out / "busca.html").write_text(busca, encoding="utf-8")   # compat links antigos
-    (out / "sem-participacao.html").write_text(_pagina_sem_participacao(cons, slugs), encoding="utf-8")
+    # "Sem participações" foi unida a Pendências; mantém redirect p/ links antigos
+    (out / "sem-participacao.html").write_text(
+        '<!doctype html><meta charset="utf-8">'
+        '<meta http-equiv="refresh" content="0; url=pendencias-relatorio.html">'
+        '<link rel="canonical" href="pendencias-relatorio.html">'
+        '<p>Esta página foi unida a <a href="pendencias-relatorio.html">Pendências e ações sem '
+        'participação</a>.</p>', encoding="utf-8")
     (out / "pendencias-relatorio.html").write_text(_pagina_pendencias(cons, slugs), encoding="utf-8")
-    (out / "temas.html").write_text(_pagina_temas(cons, slugs), encoding="utf-8")
+    (out / "temas.html").write_text(
+        _pagina_temas(cons, slugs, descrever_temas(cons)), encoding="utf-8")
     try:
         (out / "jornada.html").write_text(_pagina_jornada(cons, str(formandos_dir)), encoding="utf-8")
     except Exception as e:

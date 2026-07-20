@@ -211,7 +211,6 @@ _NAV_ITENS = [("index.html", "Buscar", "busca"), ("painel.html", "Painel", "pain
               ("extensionistas/index.html", "Extensionistas", "pessoas"),
               ("temas.html", "Temas", "temas"),
               ("jornada.html", "Jornada", "pessoas"),
-              ("sem-participacao.html", "Sem participações", "sem"),
               ("pendencias-relatorio.html", "Pendências", "pend"),
               ("dados-abertos.html", "Dados", "dados")]
 
