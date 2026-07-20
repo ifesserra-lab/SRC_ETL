@@ -7,8 +7,13 @@ título+resumo; sem casar, cai em "Outros / formação".
 """
 from __future__ import annotations
 
+import json
+import time
 import unicodedata
 from collections import Counter, defaultdict
+from pathlib import Path
+
+_CACHE_DESC = Path("data/temas_descricoes.json")
 
 
 def _norm(s) -> str:
@@ -52,9 +57,20 @@ def _e_extensao(a: dict) -> bool:
     return "extens" in _norm(a.get("Natureza"))
 
 
+def _ativa(a: dict) -> bool:
+    """Ação com participação registrada (público ou equipe > 0)."""
+    if a.get("total_participacoes"):
+        return True
+    return any(p.get("Nome") or p.get("CPF") for p in a.get("participacoes", []))
+
+
+def _considera(a: dict) -> bool:
+    return _e_extensao(a) and _ativa(a)
+
+
 def mapa_temas(cons: dict) -> dict:
     """{acao_id: tema} para as ações de extensão."""
-    return {a.get("acao_id"): tema_de(a) for a in cons.get("acoes", []) if _e_extensao(a)}
+    return {a.get("acao_id"): tema_de(a) for a in cons.get("acoes", []) if _considera(a)}
 
 
 def agregar_temas(cons: dict, slugs: dict | None = None) -> list[dict]:
@@ -63,7 +79,7 @@ def agregar_temas(cons: dict, slugs: dict | None = None) -> list[dict]:
     dados: dict[str, dict] = defaultdict(
         lambda: {"acoes": 0, "publico": 0, "pset": set(), "coord": Counter(), "ex": []})
     for a in cons.get("acoes", []):
-        if not _e_extensao(a):
+        if not _considera(a):
             continue
         t = tema_de(a)
         d = dados[t]
@@ -90,12 +106,79 @@ def agregar_temas(cons: dict, slugs: dict | None = None) -> list[dict]:
     return sorted(out, key=lambda x: -x["publico"])
 
 
+def _material_tema(cons: dict) -> dict:
+    """{tema: [títulos + trechos de resumo dos projetos]} para alimentar o modelo."""
+    mat: dict[str, dict] = defaultdict(lambda: {"titulos": [], "resumos": []})
+    for a in cons.get("acoes", []):
+        if not _considera(a):
+            continue
+        t = tema_de(a)
+        tit = (a.get("Título ação") or "").strip()
+        if tit and len(mat[t]["titulos"]) < 14:
+            mat[t]["titulos"].append(tit)
+        rs = (a.get("Resumo") or "").strip()
+        if rs and len(mat[t]["resumos"]) < 3:
+            mat[t]["resumos"].append(rs[:300])
+    return mat
+
+
+def descrever_temas(cons: dict, *, cache_path=_CACHE_DESC, modelo: str | None = None,
+                    gerar: bool = False, on_progress=None) -> dict:
+    """Descrição (1–2 frases) de cada tema via Mistral, com cache em disco.
+
+    Lê o cache sempre; só chama a API quando `gerar=True` (precisa de MISTRAL_KEY).
+    Baseia-se APENAS nos títulos/resumos dos projetos do tema (não inventa)."""
+    log = on_progress or (lambda _m: None)
+    cache_p = Path(cache_path)
+    cache = json.loads(cache_p.read_text(encoding="utf-8")) if cache_p.exists() else {}
+    if not gerar:
+        return cache
+    import httpx
+    from ..etl.enriquecer import API_URL, MODELO_PADRAO, carregar_chave
+    modelo = modelo or MODELO_PADRAO
+    mat = _material_tema(cons)
+    pend = [t for t in mat if t not in cache]
+    log(f"descrições de tema: {len(cache)} em cache, {len(pend)} a gerar")
+    if not pend:
+        return cache
+    chave = carregar_chave()
+    sistema = ("Você descreve TEMAS de extensão universitária do Ifes campus Serra, em português, "
+               "tom institucional. Para cada tema, escreva 1 a 2 frases explicando o que o "
+               "caracteriza, com base APENAS nos títulos e resumos dos projetos listados. Não "
+               "invente números, nomes ou resultados. Responda APENAS JSON.")
+    usuario = ("Descreva cada tema. Formato: {\"desc\": {\"<tema>\": \"texto\"}}\n\n" + "\n\n".join(
+        f"[{t}]\nProjetos: " + "; ".join(mat[t]["titulos"])
+        + ("\nResumos: " + " || ".join(mat[t]["resumos"]) if mat[t]["resumos"] else "")
+        for t in pend))
+    body = {"model": modelo, "temperature": 0.3, "response_format": {"type": "json_object"},
+            "messages": [{"role": "system", "content": sistema},
+                         {"role": "user", "content": usuario}]}
+    try:
+        with httpx.Client() as cli:
+            for tent in range(4):
+                r = cli.post(API_URL, json=body, headers={"Authorization": f"Bearer {chave}"}, timeout=120)
+                if r.status_code == 429:
+                    time.sleep(2 * (tent + 1)); continue
+                r.raise_for_status()
+                res = json.loads(r.json()["choices"][0]["message"]["content"])
+                for t, txt in (res.get("desc") or {}).items():
+                    if isinstance(txt, str) and txt.strip():
+                        cache[t] = txt.strip()
+                break
+    except Exception as e:
+        log(f"  ! erro: {str(e)[:80]}")
+    cache_p.parent.mkdir(parents=True, exist_ok=True)
+    cache_p.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+    log(f"  ok ({len(cache)} descrições)")
+    return cache
+
+
 def temas_por_pessoa(cons: dict) -> dict:
     """{nome_normalizado: Counter(tema -> nº de ações)} — coord ou equipe (extensão)."""
     mapa = mapa_temas(cons)
     por: dict[str, Counter] = defaultdict(Counter)
     for a in cons.get("acoes", []):
-        if not _e_extensao(a):
+        if not _considera(a):
             continue
         t = mapa.get(a.get("acao_id"))
         if not t:
@@ -112,3 +195,23 @@ def temas_por_pessoa(cons: dict) -> dict:
         for n in nomes:
             por[n][t] += 1
     return por
+
+
+def _cli(argv: list[str] | None = None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(prog="src-etl-temas",
+                                 description="Temas das ações + descrição por IA (Mistral).")
+    ap.add_argument("--consolidado", default="data/serra_consolidado.json")
+    ap.add_argument("--descrever", action="store_true",
+                    help="gera a descrição de cada tema via Mistral (precisa de MISTRAL_KEY)")
+    args = ap.parse_args(argv)
+    cons = json.loads(Path(args.consolidado).read_text(encoding="utf-8"))
+    if args.descrever:
+        descrever_temas(cons, gerar=True, on_progress=print)
+    for t in agregar_temas(cons):
+        print(f"{t['tema']:36} {t['acoes']:3} ações · {t['publico']:5} atend · {t['pessoas']:5} pessoas")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_cli())
