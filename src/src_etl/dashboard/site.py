@@ -22,7 +22,9 @@ from pathlib import Path
 from .painel import HORIZON_CSS, montar_shell
 from .relatorio import _barras, _donut, _tile as _tiler, _secao, _ranking_coord
 from .jornada import (agregar_jornada, svg_curva_fase, svg_funil, svg_timeline,
-                      svg_inic_stack, tabela_inic_ano, texto_inic_ano)
+                      svg_inic_stack, tabela_inic_ano, texto_inic_ano,
+                      svg_stack, tabela_por_ano, texto_dim_ano,
+                      svg_papel_comp, tabela_inic_nao, texto_publico)
 from .temas import agregar_temas, temas_por_pessoa, descrever_temas, _norm as _norm_tema
 
 _EXTRA_CSS = """
@@ -1049,6 +1051,32 @@ def _pagina_jornada(cons: dict, formandos_dir: str) -> str:
                "Extensão dessa participação. A barra mostra a fatia de cada iniciativa dentro do "
                "ano (soma 100%); a tabela traz todas as iniciativas com nº de alunos e % do ano. "
                "As 7 iniciativas mais frequentes recebem cor fixa; as demais entram em 'Outras'."),
+        _secao("Por cluster temático, por ano após ingresso",
+               svg_stack(a["clust_por_ano"], top=7, rotulo_outras="Outros clusters")
+               + texto_dim_ano(a, "clust_por_ano", "cluster")
+               + tabela_por_ano(a["clust_por_ano"], "Cluster temático"),
+               "Mesma leitura, agrupando a 1ª extensão pelo cluster temático (derivado do "
+               "título/resumo da ação).",
+               explica="Reagrupa a ação da 1ª extensão nos ~10 clusters temáticos inferidos do "
+               "texto (título + resumo), em vez de por ação individual. Mostra em que FRENTE o "
+               "aluno entra na extensão a cada ano. Barra soma 100% no ano."),
+        _secao("Por área temática (PROEX), por ano após ingresso",
+               svg_stack(a["area_por_ano"], top=7, rotulo_outras="Outras áreas")
+               + texto_dim_ano(a, "area_por_ano", "tema")
+               + tabela_por_ano(a["area_por_ano"], "Área temática"),
+               "Mesma leitura, agrupando pela área temática principal declarada da ação.",
+               explica="Reagrupa a ação da 1ª extensão pela Área temática principal (campo oficial "
+               "da PROEX; ações sem preenchimento entram em 'Sem área'). Barra soma 100% no ano."),
+        _secao("Público da extensão: alunos × não-alunos",
+               svg_papel_comp(a) + texto_publico(a) + tabela_inic_nao(a),
+               f'{a["publico"]["pct_nao"]}% das pessoas em extensão são não-alunos (comunidade '
+               "atendida) — papel, iniciativas e recorrência.",
+               explica="Compara quem participa da Extensão: pessoas que constam como formado "
+               "(aluno) vs. as que não constam (não-aluno). Papel = se a pessoa aparece como "
+               "público-alvo (beneficiário), equipe de execução (executor) ou ambos. A tabela "
+               "lista as iniciativas com mais não-alunos distintos. Ressalva: 'não-aluno' = não "
+               "consta na planilha de formados (inclui comunidade externa, docentes/servidores e "
+               "alunos ainda não formados); casamento por nome pode ter homônimos."),
     ]
     return _doc("Jornada do formado — Campus Serra", "", "jornada.html", "Jornada",
                 "Jornada do formado na extensão",
