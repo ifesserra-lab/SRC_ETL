@@ -1,0 +1,258 @@
+<!doctype html><html lang='pt-br'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Comunidade atendida — Campus Serra</title><style>
+/* Design system (skill ui-ux-pro-max): Data-Dense Dashboard
+   Primary #3B82F6 · CTA #F97316 · bg #F8FAFC · text #1E293B · Fira Sans + Fira Code */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
+:root{
+  color-scheme:light;
+  --plane:#f8fafc; --surface-1:#ffffff; --parchment:#f1f5f9; --pearl:#f8fafc;
+  --text-primary:#1e293b; --text-secondary:#475569; --muted:#64748b;
+  --grid:#e2e8f0; --border:#cbd5e1;
+  --series-1:#3b82f6; --series-2:#0d9488; --accent-focus:#2563eb; --cta:#f97316; --nav-bg:#ffffff;
+  --c1:#3b82f6; --c2:#0d9488; --c3:#d97706; --c4:#7c3aed; --c5:#0891b2; --c6:#db2777;
+  --row-hover:#eff6ff;
+  --radius:10px; --radius-sm:6px;
+  --mono:"Fira Code",ui-monospace,SFMono-Regular,monospace;
+}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme=light])){
+  color-scheme:dark;
+  --plane:#0f172a; --surface-1:#1e293b; --parchment:#334155; --pearl:#1e293b;
+  --text-primary:#f1f5f9; --text-secondary:#cbd5e1; --muted:#94a3b8;
+  --grid:#334155; --border:#475569;
+  --series-1:#60a5fa; --series-2:#2dd4bf; --accent-focus:#93c5fd; --cta:#fb923c; --nav-bg:#0f172a;
+  --c1:#60a5fa; --c2:#2dd4bf; --c3:#fbbf24; --c4:#a78bfa; --c5:#22d3ee; --c6:#f472b6;
+  --row-hover:#1e3a5f;
+}}
+:root[data-theme=dark]{
+  color-scheme:dark;
+  --plane:#0f172a; --surface-1:#1e293b; --parchment:#334155; --pearl:#1e293b;
+  --text-primary:#f1f5f9; --text-secondary:#cbd5e1; --muted:#94a3b8;
+  --grid:#334155; --border:#475569;
+  --series-1:#60a5fa; --series-2:#2dd4bf; --accent-focus:#93c5fd; --cta:#fb923c; --nav-bg:#0f172a;
+  --c1:#60a5fa; --c2:#2dd4bf; --c3:#fbbf24; --c4:#a78bfa; --c5:#22d3ee; --c6:#f472b6;
+  --row-hover:#1e3a5f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--text-primary);
+font-family:"Fira Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a,button,label,summary{cursor:pointer}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{
+transition:none!important;animation:none!important}}
+/* ---- topbar (menu horizontal superior) ---- */
+.topbar{position:sticky;top:0;z-index:50;background:var(--nav-bg);
+border-bottom:1px solid var(--grid)}
+.topbar-in{max-width:1160px;margin:0 auto;padding:0 20px;height:52px;
+display:flex;align-items:center;gap:14px}
+.brand{font-weight:700;font-size:15px;color:var(--text-primary);
+text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand::before{content:'';width:10px;height:10px;border-radius:3px;background:var(--series-1)}
+.brand small{color:var(--muted);font-weight:400;font-size:12px}
+.snav{display:flex;gap:2px;overflow-x:auto;flex:1;justify-content:flex-start;
+scrollbar-width:none}
+.snav::-webkit-scrollbar{display:none}
+.snav a{white-space:nowrap}
+.snav a{display:flex;align-items:center;gap:6px;padding:7px 9px;border-radius:8px;
+text-decoration:none;color:var(--text-secondary);font-weight:500;font-size:13.5px;
+white-space:nowrap;transition:background .15s,color .15s}
+.snav a svg{width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:2;
+stroke-linecap:round;stroke-linejoin:round}
+.snav a:hover{color:var(--text-primary);background:var(--parchment)}
+.snav a.on{color:var(--series-1);background:color-mix(in srgb,var(--series-1) 12%,transparent)}
+.snav a:focus-visible{outline:2px solid var(--accent-focus);outline-offset:2px}
+.main{min-width:0}
+.wrap{max-width:1160px;margin:0 auto;padding:28px 20px 64px}
+.crumb{color:var(--muted);font-size:12px;margin:0 0 4px}
+.crumb b{color:var(--text-secondary);font-weight:600}
+header h1{margin:0 0 6px;font-size:26px;font-weight:700;line-height:1.2;
+letter-spacing:-.01em;text-wrap:balance}
+header .sub{color:var(--text-secondary);margin:0 0 6px;font-size:14.5px;max-width:72ch}
+@media (max-width:720px){.topbar-in{padding:0 12px;gap:10px}.brand small{display:none}
+header h1{font-size:22px}}
+/* hero (home de busca) */
+.wrap-hero{padding-top:7vh;text-align:center;position:relative}
+.wrap-hero::before{content:'';position:absolute;left:50%;top:-40px;transform:translateX(-50%);
+width:min(760px,90vw);height:220px;z-index:-1;pointer-events:none;
+background:radial-gradient(60% 100% at 50% 0,color-mix(in srgb,var(--series-1) 9%,transparent),transparent 70%)}
+.hero h1{font-size:40px;font-weight:700;line-height:1.12;letter-spacing:-.02em;margin:0 0 10px;
+color:var(--text-primary)}
+.hero .sub{margin:0 auto 8px;max-width:62ch;font-size:16px;color:var(--text-secondary)}
+@media (max-width:720px){.hero h1{font-size:28px}}
+.wrap-hero .busca{max-width:620px;margin:22px auto 0;display:block;text-align:left}
+.wrap-hero #res{text-align:left;max-width:980px;margin:0 auto}
+.wrap-hero #res .vazio{text-align:center;margin-top:12px}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.chips button{border:1px solid var(--grid);background:var(--surface-1);color:var(--text-secondary);
+border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;font-family:inherit;
+transition:background .15s,border-color .15s,color .15s;min-height:40px}
+.chips button:hover{border-color:var(--series-1);color:var(--series-1);
+background:color-mix(in srgb,var(--series-1) 6%,transparent)}
+.chips button:focus-visible{outline:2px solid var(--accent-focus);outline-offset:2px}
+/* KPI row data-dense */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:20px 0 6px}
+.tile{padding:14px 16px;background:var(--surface-1);border:1px solid var(--grid);
+border-radius:var(--radius);border-left:3px solid var(--series-1);
+transition:box-shadow .15s,border-color .15s}
+.tile:hover{box-shadow:0 1px 6px rgba(15,23,42,.07)}
+.tile-val{font-size:24px;font-weight:700;line-height:1.2;font-family:var(--mono);
+font-variant-numeric:tabular-nums;color:var(--text-primary)}
+.tile-lbl{color:var(--text-secondary);font-size:11.5px;margin-top:3px;font-weight:500;
+text-transform:uppercase;letter-spacing:.04em}
+.tile-sub{color:var(--muted);font-size:11.5px;margin-top:3px}
+section{margin-top:26px}
+.par2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.par2-item{min-width:0}
+.par2-h{font-size:13.5px;font-weight:600;margin:0 0 6px;color:var(--text-primary)}
+h2{font-size:16px;margin:0 0 2px;font-weight:600}
+.sec-desc{color:var(--text-secondary);font-size:13px;margin:0 0 8px}
+.card{background:var(--surface-1);border:1px solid var(--grid);border-radius:var(--radius);
+padding:16px;overflow-x:auto}
+.lbl{fill:var(--text-secondary);font-size:12px}
+.val{fill:var(--text-primary);font-size:12px;font-weight:600;font-family:var(--mono)}
+.vazio{color:var(--muted);margin:0;font-size:13px}
+.donut-wrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.donut-num{fill:var(--text-primary);font-size:24px;font-weight:600}
+.donut-cap{fill:var(--muted);font-size:11px}
+.leg{display:flex;flex-direction:column;gap:5px;min-width:220px}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:13px}
+.sw{width:11px;height:11px;border-radius:3px;flex:none}
+.leg-nome{flex:1}.leg-val{color:var(--text-secondary);font-family:var(--mono);font-size:12px}
+footer{margin-top:36px;color:var(--muted);font-size:12px;
+border-top:1px solid var(--grid);padding-top:12px}
+.pii{background:var(--parchment);border-radius:var(--radius-sm);
+padding:10px 14px;font-size:12px;color:var(--text-secondary);margin-top:18px}
+.lista{max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.li{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;
+padding:7px 6px;border-bottom:1px solid var(--grid);font-size:13px;transition:background .15s}
+.li:hover{background:var(--row-hover)}
+.li4{grid-template-columns:1fr auto auto auto}
+.li-coord{color:var(--text-secondary);font-size:12px;white-space:nowrap}
+.li-tit{color:var(--text-primary)}
+.li-tipo{color:var(--muted);font-size:11px;border:1px solid var(--grid);
+border-radius:6px;padding:1px 8px;font-weight:500}
+.li-proc{color:var(--muted);font-family:var(--mono);font-size:11.5px}
+.net-lbl{fill:var(--text-secondary);font-size:11px;font-weight:600}
+.explica{margin-top:10px;border-top:1px solid var(--grid);padding-top:8px}
+.explica summary{color:var(--series-1);font-size:13px;font-weight:500}
+.explica summary:focus-visible{outline:2px solid var(--accent-focus);outline-offset:2px}
+.explica p{color:var(--text-secondary);font-size:13px;margin:8px 0 0;max-width:72ch}
+.nota{background:color-mix(in srgb,var(--cta) 10%,var(--surface-1));color:var(--text-primary);
+border-left:3px solid var(--cta);border-radius:var(--radius-sm);
+padding:10px 14px;font-size:13px;font-weight:500;margin:14px 0}
+/* abas: segmented compacto */
+.tabs>input{position:absolute;opacity:0;pointer-events:none}
+.tabbar{display:inline-flex;gap:2px;margin:18px 0 4px;flex-wrap:wrap;
+background:var(--parchment);border-radius:9px;padding:3px}
+.tabbar label{padding:7px 14px;border-radius:7px;font-weight:500;font-size:13px;
+color:var(--text-secondary);transition:all .15s;min-height:32px;display:flex;align-items:center}
+.tabbar label:hover{color:var(--text-primary)}
+#tab1:checked~.tabbar label[for=tab1],
+#tab2:checked~.tabbar label[for=tab2],
+#tab3:checked~.tabbar label[for=tab3],
+#tab4:checked~.tabbar label[for=tab4],
+#tab5:checked~.tabbar label[for=tab5],
+#tab6:checked~.tabbar label[for=tab6]{background:var(--surface-1);color:var(--series-1);
+font-weight:600;box-shadow:0 1px 3px rgba(15,23,42,.12)}
+.tabs>input:focus-visible~.tabbar label{outline:2px solid var(--accent-focus)}
+.panel{display:none}
+#tab1:checked~.p1{display:block}
+#tab2:checked~.p2{display:block}
+#tab3:checked~.p3{display:block}
+#tab4:checked~.p4{display:block}
+#tab5:checked~.p5{display:block}
+#tab6:checked~.p6{display:block}
+/* ---- mobile-first: mídia fluida, sem overflow horizontal, tap targets ---- */
+html{-webkit-text-size-adjust:100%}
+img,svg,canvas{max-width:100%;height:auto}
+.card{-webkit-overflow-scrolling:touch}
+.li-tit,.leg-nome,.li-coord,table.tb td{overflow-wrap:anywhere}
+@media (max-width:640px){
+  body{font-size:14.5px}
+  .wrap{padding:18px 14px 48px}
+  header h1{font-size:20px}
+  header .sub{font-size:13.5px}
+  section{margin-top:20px}
+  .card{padding:12px}
+  .tiles{grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin:16px 0 4px}
+  .tile{padding:12px 13px}
+  .tile-val{font-size:20px}
+  /* nav com alvos de toque ≥44px */
+  .topbar-in{height:auto;min-height:52px;padding:6px 12px;gap:8px}
+  .snav a{padding:10px 11px;font-size:14px;min-height:40px}
+  /* listas: empilha colunas em vez de espremer */
+  .li,.li4{grid-template-columns:1fr;gap:3px;align-items:start;padding:9px 6px}
+  .li-coord,.li-tipo,.li-proc{justify-self:start}
+  .leg{min-width:0;width:100%}
+  .donut-wrap{gap:14px;justify-content:center}
+  table.tb{font-size:12.5px}
+  table.tb th,table.tb td{padding:7px 8px}
+  .sec-desc,.explica p,.explica summary{font-size:12.5px}
+  .hero h1{font-size:24px}
+  .hero .sub{font-size:15px}
+  .chips button{padding:10px 14px}
+  .par2{gap:16px}
+}
+@media (max-width:380px){.tiles{grid-template-columns:1fr 1fr}}
+
+table.tb{width:100%;border-collapse:collapse;font-size:13px}
+table.tb th{color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);
+font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+position:sticky;top:0;background:var(--surface-1)}
+table.tb td{padding:8px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+table.tb tr:last-child td{border-bottom:0}
+table.tb tbody tr{transition:background .15s}
+table.tb tbody tr:hover{background:var(--row-hover)}
+a.lk{color:var(--series-1);text-decoration:none;font-weight:500}
+a.lk:hover{text-decoration:underline}
+a.lk:focus-visible{outline:2px solid var(--accent-focus);outline-offset:2px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:14px 0}
+.meta div{background:var(--surface-1);border:1px solid var(--grid);border-radius:var(--radius);
+padding:11px 14px;font-size:13px}
+.meta b{display:block;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.05em;
+text-transform:uppercase;margin-bottom:3px}
+.resumo{background:var(--surface-1);border:1px solid var(--grid);
+border-left:3px solid var(--series-1);border-radius:var(--radius);padding:24px 28px;
+color:var(--text-primary);max-width:none;min-height:120px;line-height:1.7;font-size:16px}
+input.busca{width:100%;padding:12px 18px;border-radius:var(--radius);border:1px solid var(--border);
+background:var(--surface-1);color:var(--text-primary);font-size:15px;
+outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s;min-height:46px}
+input.busca:focus{border-color:var(--series-1);
+box-shadow:0 0 0 3px color-mix(in srgb,var(--series-1) 20%,transparent)}
+input[type=search]:focus-visible{outline:2px solid var(--accent-focus);outline-offset:1px}
+.busca-intro{text-align:center;max-width:64ch;margin:22px auto 4px;
+color:var(--text-secondary);font-size:15px}
+td.nowrap{white-space:nowrap}
+td.ja-ano{white-space:nowrap;font-weight:600;color:var(--text-primary);
+background:color-mix(in srgb,var(--series-1) 6%,transparent)}
+td.ja-ano .ja-tot{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
+td.ja-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;border:1px solid var(--grid);border-radius:6px;padding:3px 10px;
+font-size:11.5px;font-weight:500;color:var(--text-secondary);white-space:nowrap;
+background:var(--surface-1)}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11.5px;font-weight:600;
+white-space:nowrap;border:1px solid transparent;line-height:1.5}
+.pill-c1{color:var(--c1);background:color-mix(in srgb,var(--c1) 12%,transparent);border-color:color-mix(in srgb,var(--c1) 28%,transparent)}
+.pill-c2{color:var(--c2);background:color-mix(in srgb,var(--c2) 12%,transparent);border-color:color-mix(in srgb,var(--c2) 28%,transparent)}
+.pill-c3{color:var(--c3);background:color-mix(in srgb,var(--c3) 14%,transparent);border-color:color-mix(in srgb,var(--c3) 30%,transparent)}
+.pill-c4{color:var(--c4);background:color-mix(in srgb,var(--c4) 12%,transparent);border-color:color-mix(in srgb,var(--c4) 28%,transparent)}
+.pill-c5{color:var(--c5);background:color-mix(in srgb,var(--c5) 12%,transparent);border-color:color-mix(in srgb,var(--c5) 28%,transparent)}
+.pill-c6{color:var(--c6);background:color-mix(in srgb,var(--c6) 12%,transparent);border-color:color-mix(in srgb,var(--c6) 28%,transparent)}
+.pill-n{color:var(--muted);background:color-mix(in srgb,var(--muted) 10%,transparent);border-color:var(--grid)}
+.tl-t{fill:var(--text-primary);font-size:14px;font-weight:600}
+.tl-s{fill:var(--muted);font-size:12px}
+.mkt{margin-top:18px;overflow:hidden}
+.mkt-head{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:8px}
+.mkt-num{font-size:56px;font-weight:800;line-height:1;letter-spacing:-.02em;
+color:var(--series-1);font-variant-numeric:tabular-nums}
+.mkt-lbl{font-size:18px;line-height:1.4;color:var(--text-primary)}
+.mk-svg{margin-top:6px}
+.mk-ax{fill:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.mk-val{fill:var(--text-primary);font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:560px){.mkt-num{font-size:40px}.mkt-lbl{font-size:15px}}
+</style></head><body><div class="topbar"><div class="topbar-in">
+  <a class="brand" href="index.html">SRC · Campus Serra<small>Extensão &amp; Ensino</small></a>
+  <nav class="snav"><a href="index.html" class=""><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span></a><a href="painel.html" class=""><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Painel</span></a><a href="acoes/index.html" class=""><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span>Ações</span></a><a href="extensionistas/index.html" class=""><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Extensionistas</span></a><a href="temas.html" class=""><svg viewBox="0 0 24 24"><path d="M20.6 13.4 11 3.8a2 2 0 0 0-1.4-.6H4a1 1 0 0 0-1 1v5.6a2 2 0 0 0 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg><span>Temas</span></a><a href="jornada.html" class=""><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Jornada</span></a><a href="comunidade.html" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Comunidade</span></a><a href="pendencias-relatorio.html" class=""><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h3"/></svg><span>Pendências</span></a><a href="dados-abertos.html" class=""><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span>Dados</span></a></nav>
+</div></div>
+<div class="main"><div class="wrap">
+<p class="crumb">Páginas / <b>Comunidade</b></p><header><h1>Comunidade atendida pela extensão</h1><p class="sub">O público não-aluno alcançado pelas ações de Extensão: papel, frentes temáticas, iniciativas e recorrência. &#x27;Não-aluno&#x27; = não consta como formado; casamento por nome — ressalvas de homônimo aplicam.</p></header>
+<div class="tiles"><div class="tile"><div class="tile-val">4.230</div><div class="tile-lbl">Não-alunos na extensão</div><div class="tile-sub">96% do público</div></div><div class="tile"><div class="tile-val">85%</div><div class="tile-lbl">Só beneficiários</div><div class="tile-sub">público-alvo, não equipe</div></div><div class="tile"><div class="tile-val">86%</div><div class="tile-lbl">Em 1 só iniciativa</div><div class="tile-sub">contato pontual</div></div><div class="tile"><div class="tile-val">190</div><div class="tile-lbl">Alunos (formados)</div><div class="tile-sub">para comparação</div></div></div><section><h2>Papel na extensão: não-alunos × alunos</h2><p class="sec-desc">Quem é atendido (beneficiário) e quem executa (equipe).</p><div class="card"><svg viewBox="0 0 900 96" width="100%" role="img" style="display:block"><text x="182" y="35" text-anchor="end" class="lbl">Não-alunos · 4230</text><rect x="190.0" y="18" width="550.7" height="24" rx="3" fill="#eda100"><title>Não-alunos · 4230 — Só beneficiário (público-alvo): 3584 (85%)</title></rect><text x="465.4" y="36" text-anchor="middle" class="val" fill="#fff">85%</text><rect x="740.7" y="18" width="59.2" height="24" rx="3" fill="#2a78d6"><title>Não-alunos · 4230 — Só executor (equipe): 385 (9%)</title></rect><text x="770.3" y="36" text-anchor="middle" class="val" fill="#fff">9%</text><rect x="799.9" y="18" width="40.1" height="24" rx="3" fill="#1baf7a"><title>Não-alunos · 4230 — Executor e beneficiário: 261 (6%)</title></rect><text x="819.9" y="36" text-anchor="middle" class="val" fill="#fff">6%</text><text x="182" y="79" text-anchor="end" class="lbl">Alunos (formados) · 190</text><rect x="190.0" y="62" width="280.5" height="24" rx="3" fill="#eda100"><title>Alunos (formados) · 190 — Só beneficiário (público-alvo): 82 (43%)</title></rect><text x="330.3" y="80" text-anchor="middle" class="val" fill="#fff">43%</text><rect x="470.5" y="62" width="75.3" height="24" rx="3" fill="#2a78d6"><title>Alunos (formados) · 190 — Só executor (equipe): 22 (12%)</title></rect><text x="508.2" y="80" text-anchor="middle" class="val" fill="#fff">12%</text><rect x="545.8" y="62" width="294.2" height="24" rx="3" fill="#1baf7a"><title>Alunos (formados) · 190 — Executor e beneficiário: 86 (45%)</title></rect><text x="692.9" y="80" text-anchor="middle" class="val" fill="#fff">45%</text></svg><div class="leg" style="flex-direction:row;gap:16px;margin-top:12px;flex-wrap:wrap"><span class="leg-item"><span class="sw" style="background:#eda100"></span>Só beneficiário (público-alvo)</span><span class="leg-item"><span class="sw" style="background:#2a78d6"></span>Só executor (equipe)</span><span class="leg-item"><span class="sw" style="background:#1baf7a"></span>Executor e beneficiário</span></div><p>Das <b>4420</b> pessoas distintas em ações de Extensão, apenas <b>190</b> constam como formado; as demais <b>4230</b> (<b>96%</b>) são <b>não-alunos</b> — a comunidade atendida.</p><p>O papel se inverte: o não-aluno é sobretudo <b>beneficiário</b> (público-alvo), enquanto o aluno formado atua majoritariamente como <b>executor</b> (equipe).</p><p><b>86%</b> dos não-alunos participam de <b>uma única</b> iniciativa — contato pontual, típico de público de evento/oficina.</p><p><i>Ressalva:</i> "não-aluno" = não consta na planilha de formados; inclui comunidade externa, docentes/servidores e alunos ainda não formados. Casamento por nome.</p><details class="explica"><summary>O que significa?</summary><p>Papel de cada pessoa: público-alvo (beneficiário), equipe de execução (executor) ou ambos. Não-aluno = não consta na planilha de formados (inclui comunidade externa, docentes/servidores e alunos ainda não formados).</p></details></div></section><section><h2>Frentes que mais atendem comunidade (cluster temático)</h2><p class="sec-desc">% de não-alunos distintos alcançados por cada cluster (uma pessoa pode aparecer em mais de um).</p><div class="card"><svg viewBox="0 0 590 308" width="100%" role="img" style="max-width:590px"><text x="202" y="20" text-anchor="end" class="lbl">Robótica e cultura maker</text><rect x="210" y="9" width="320" height="16" rx="4" fill="var(--series-1)"/><text x="536" y="20" class="val">38%</text><text x="202" y="50" text-anchor="end" class="lbl">Captação e ingresso</text><rect x="210" y="39" width="236" height="16" rx="4" fill="var(--series-1)"/><text x="452" y="50" class="val">28%</text><text x="202" y="80" text-anchor="end" class="lbl">Mulheres e inclusão</text><rect x="210" y="69" width="185" height="16" rx="4" fill="var(--series-1)"/><text x="401" y="80" class="val">22%</text><text x="202" y="110" text-anchor="end" class="lbl">Empreendedorismo e incubação</text><rect x="210" y="99" width="93" height="16" rx="4" fill="var(--series-1)"/><text x="309" y="110" class="val">11%</text><text x="202" y="140" text-anchor="end" class="lbl">Cultura e arte</text><rect x="210" y="129" width="51" height="16" rx="4" fill="var(--series-1)"/><text x="267" y="140" class="val">6%</text><text x="202" y="170" text-anchor="end" class="lbl">Saúde e bem-estar</text><rect x="210" y="159" width="34" height="16" rx="4" fill="var(--series-1)"/><text x="250" y="170" class="val">4%</text><text x="202" y="200" text-anchor="end" class="lbl">Outros / formação</text><rect x="210" y="189" width="17" height="16" rx="4" fill="var(--series-1)"/><text x="233" y="200" class="val">2%</text><text x="202" y="230" text-anchor="end" class="lbl">Software, dados e sistemas</text><rect x="210" y="219" width="8" height="16" rx="4" fill="var(--series-1)"/><text x="224" y="230" class="val">1%</text><text x="202" y="260" text-anchor="end" class="lbl">Escola e formação de profess</text><rect x="210" y="249" width="3" height="16" rx="4" fill="var(--series-1)"/><text x="219" y="260" class="val">0%</text><text x="202" y="290" text-anchor="end" class="lbl">Ciência e divulgação</text><rect x="210" y="279" width="3" height="16" rx="4" fill="var(--series-1)"/><text x="219" y="290" class="val">0%</text></svg></div></section><section><h2>Por área temática (PROEX)</h2><p class="sec-desc">% de não-alunos distintos por área temática principal declarada.</p><div class="card"><svg viewBox="0 0 590 158" width="100%" role="img" style="max-width:590px"><text x="202" y="20" text-anchor="end" class="lbl">Educação</text><rect x="210" y="9" width="320" height="16" rx="4" fill="var(--series-1)"/><text x="536" y="20" class="val">65%</text><text x="202" y="50" text-anchor="end" class="lbl">Tecnologia e Produção</text><rect x="210" y="39" width="167" height="16" rx="4" fill="var(--series-1)"/><text x="383" y="50" class="val">34%</text><text x="202" y="80" text-anchor="end" class="lbl">Saúde</text><rect x="210" y="69" width="34" height="16" rx="4" fill="var(--series-1)"/><text x="250" y="80" class="val">7%</text><text x="202" y="110" text-anchor="end" class="lbl">Cultura</text><rect x="210" y="99" width="15" height="16" rx="4" fill="var(--series-1)"/><text x="231" y="110" class="val">3%</text><text x="202" y="140" text-anchor="end" class="lbl">Trabalho</text><rect x="210" y="129" width="15" height="16" rx="4" fill="var(--series-1)"/><text x="231" y="140" class="val">3%</text></svg></div></section><section><h2>Iniciativas que mais atendem comunidade</h2><p class="sec-desc">Top iniciativas por nº de não-alunos distintos.</p><div class="card"><div class="card" style="margin-top:14px;overflow:auto"><table class="tb"><tr><th>Iniciativa</th><th>Não-alunos</th><th>% dos não-alunos</th></tr><tr><td>LAMPEX – Laboratório Modelo de Práticas de Extensão</td><td class="ja-num">908</td><td class="ja-num">21%</td></tr><tr><td>Ifes Portas Abertas</td><td class="ja-num">889</td><td class="ja-num">21%</td></tr><tr><td>Programa Local Núcleo Incubador Campus Serra – NIS</td><td class="ja-num">309</td><td class="ja-num">7%</td></tr><tr><td>Atividades físicas adaptadas e inclusão (AFAI)</td><td class="ja-num">286</td><td class="ja-num">7%</td></tr><tr><td>LabMaker Serra: Espaço Maker Multiusuário de Apoio ao Ensino, Pesquisa e Extensão</td><td class="ja-num">279</td><td class="ja-num">7%</td></tr><tr><td>O IFES é o meu lugar</td><td class="ja-num">253</td><td class="ja-num">6%</td></tr><tr><td>SOF – Serviço de Orientação Financeira (unidade Ifes Serra)</td><td class="ja-num">243</td><td class="ja-num">6%</td></tr><tr><td>Física ao Alcance de Todos</td><td class="ja-num">236</td><td class="ja-num">6%</td></tr><tr><td>Conectando Talentos: Robótica e Programação no IFES-Serra</td><td class="ja-num">196</td><td class="ja-num">5%</td></tr><tr><td>QUÍMICA VERDE APLICADA: oficinas e workshops</td><td class="ja-num">138</td><td class="ja-num">3%</td></tr><tr><td>SEMANA DE CONTROLE E AUTOMAÇÃO</td><td class="ja-num">106</td><td class="ja-num">3%</td></tr><tr><td>Circuito Audiovisual</td><td class="ja-num">96</td><td class="ja-num">2%</td></tr></table></div></div></section><section><h2>Recorrência: quantas iniciativas cada pessoa faz</h2><p class="sec-desc">A maioria participa de uma só ação — público de contato único (evento/oficina).</p><div class="card"><svg viewBox="0 0 590 128" width="100%" role="img" style="max-width:590px"><text x="202" y="20" text-anchor="end" class="lbl">1 iniciativa</text><rect x="210" y="9" width="320" height="16" rx="4" fill="var(--series-1)"/><text x="536" y="20" class="val">3645</text><text x="202" y="50" text-anchor="end" class="lbl">2</text><rect x="210" y="39" width="32" height="16" rx="4" fill="var(--series-1)"/><text x="248" y="50" class="val">366</text><text x="202" y="80" text-anchor="end" class="lbl">3</text><rect x="210" y="69" width="11" height="16" rx="4" fill="var(--series-1)"/><text x="227" y="80" class="val">126</text><text x="202" y="110" text-anchor="end" class="lbl">4 ou mais</text><rect x="210" y="99" width="8" height="16" rx="4" fill="var(--series-1)"/><text x="224" y="110" class="val">93</text></svg></div></section><section><h2>Novos não-alunos por ano (1ª participação)</h2><p class="sec-desc">Ano da primeira participação de cada não-aluno. Queda em 2020–2021 (pandemia) e recuperação a partir de 2022.</p><div class="card"><svg viewBox="0 0 1000 250" width="100%" role="img" style="display:block"><defs><linearGradient id="lng" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--series-1)" stop-opacity="0.28"/><stop offset="1" stop-color="var(--series-1)" stop-opacity="0"/></linearGradient></defs><line x1="22" y1="30" x2="978" y2="30" stroke="var(--grid)" stroke-width="1"/><line x1="22" y1="120" x2="978" y2="120" stroke="var(--grid)" stroke-width="1"/><line x1="22" y1="210" x2="978" y2="210" stroke="var(--grid)" stroke-width="1"/><polygon points="22.0,210 22.0,183.7 95.5,180.3 169.1,194.7 242.6,157.7 316.2,187.6 389.7,49.0 463.2,32.2 536.8,196.6 610.3,207.1 683.8,140.7 757.4,30.0 830.9,96.2 904.5,135.1 978.0,120.2 978.0,210" fill="url(#lng)"/><polyline points="22.0,183.7 95.5,180.3 169.1,194.7 242.6,157.7 316.2,187.6 389.7,49.0 463.2,32.2 536.8,196.6 610.3,207.1 683.8,140.7 757.4,30.0 830.9,96.2 904.5,135.1 978.0,120.2" fill="none" stroke="var(--series-1)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="22.0" cy="183.7" r="7" fill="transparent"><title>2013: 108</title></circle><circle cx="22.0" cy="183.7" r="3.2" fill="var(--series-1)"/><text x="22.0" y="173.7" text-anchor="middle" class="val">108</text><text x="22.0" y="236" text-anchor="middle" class="lbl">2013</text><circle cx="95.5" cy="180.3" r="7" fill="transparent"><title>2014: 122</title></circle><circle cx="95.5" cy="180.3" r="3.2" fill="var(--series-1)"/><text x="95.5" y="170.3" text-anchor="middle" class="val">122</text><circle cx="169.1" cy="194.7" r="7" fill="transparent"><title>2015: 63</title></circle><circle cx="169.1" cy="194.7" r="3.2" fill="var(--series-1)"/><text x="169.1" y="184.7" text-anchor="middle" class="val">63</text><text x="169.1" y="236" text-anchor="middle" class="lbl">2015</text><circle cx="242.6" cy="157.7" r="7" fill="transparent"><title>2016: 215</title></circle><circle cx="242.6" cy="157.7" r="3.2" fill="var(--series-1)"/><text x="242.6" y="147.7" text-anchor="middle" class="val">215</text><circle cx="316.2" cy="187.6" r="7" fill="transparent"><title>2017: 92</title></circle><circle cx="316.2" cy="187.6" r="3.2" fill="var(--series-1)"/><text x="316.2" y="177.6" text-anchor="middle" class="val">92</text><text x="316.2" y="236" text-anchor="middle" class="lbl">2017</text><circle cx="389.7" cy="49.0" r="7" fill="transparent"><title>2018: 662</title></circle><circle cx="389.7" cy="49.0" r="3.2" fill="var(--series-1)"/><text x="389.7" y="39.0" text-anchor="middle" class="val">662</text><circle cx="463.2" cy="32.2" r="7" fill="transparent"><title>2019: 731</title></circle><circle cx="463.2" cy="32.2" r="3.2" fill="var(--series-1)"/><text x="463.2" y="22.2" text-anchor="middle" class="val">731</text><text x="463.2" y="236" text-anchor="middle" class="lbl">2019</text><circle cx="536.8" cy="196.6" r="7" fill="transparent"><title>2020: 55</title></circle><circle cx="536.8" cy="196.6" r="3.2" fill="var(--series-1)"/><text x="536.8" y="186.6" text-anchor="middle" class="val">55</text><circle cx="610.3" cy="207.1" r="7" fill="transparent"><title>2021: 12</title></circle><circle cx="610.3" cy="207.1" r="3.2" fill="var(--series-1)"/><text x="610.3" y="197.1" text-anchor="middle" class="val">12</text><text x="610.3" y="236" text-anchor="middle" class="lbl">2021</text><circle cx="683.8" cy="140.7" r="7" fill="transparent"><title>2022: 285</title></circle><circle cx="683.8" cy="140.7" r="3.2" fill="var(--series-1)"/><text x="683.8" y="130.7" text-anchor="middle" class="val">285</text><circle cx="757.4" cy="30.0" r="7" fill="transparent"><title>2023: 740</title></circle><circle cx="757.4" cy="30.0" r="3.2" fill="var(--series-1)"/><text x="757.4" y="20.0" text-anchor="middle" class="val">740</text><text x="757.4" y="236" text-anchor="middle" class="lbl">2023</text><circle cx="830.9" cy="96.2" r="7" fill="transparent"><title>2024: 468</title></circle><circle cx="830.9" cy="96.2" r="3.2" fill="var(--series-1)"/><text x="830.9" y="86.2" text-anchor="middle" class="val">468</text><circle cx="904.5" cy="135.1" r="7" fill="transparent"><title>2025: 308</title></circle><circle cx="904.5" cy="135.1" r="3.2" fill="var(--series-1)"/><text x="904.5" y="125.1" text-anchor="middle" class="val">308</text><text x="904.5" y="236" text-anchor="middle" class="lbl">2025</text><circle cx="978.0" cy="120.2" r="7" fill="transparent"><title>2026: 369</title></circle><circle cx="978.0" cy="120.2" r="3.2" fill="var(--series-1)"/><text x="978.0" y="110.2" text-anchor="middle" class="val">369</text><text x="978.0" y="236" text-anchor="middle" class="lbl">2026</text></svg></div></section>
+</div></div></body></html>

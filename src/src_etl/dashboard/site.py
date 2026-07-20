@@ -20,7 +20,7 @@ from html import escape
 from pathlib import Path
 
 from .painel import HORIZON_CSS, montar_shell
-from .relatorio import _barras, _donut, _tile as _tiler, _secao, _ranking_coord
+from .relatorio import _barras, _donut, _linha, _tile as _tiler, _secao, _ranking_coord
 from .jornada import (agregar_jornada, svg_curva_fase, svg_funil, svg_timeline,
                       svg_inic_stack, tabela_inic_ano, texto_inic_ano,
                       svg_stack, tabela_por_ano, texto_dim_ano,
@@ -1085,6 +1085,49 @@ def _pagina_jornada(cons: dict, formandos_dir: str) -> str:
                 tiles + "".join(secoes))
 
 
+# ------------------------------------------------------------- comunidade atendida (não-alunos)
+def _pagina_comunidade(cons: dict, formandos_dir: str) -> str:
+    a = agregar_jornada(cons, formandos_dir)
+    p = a["publico"]
+    benef = next((pct for lbl, _, pct in p["papel_nao"] if lbl.startswith("Só benef")), 0)
+    tiles = "".join([
+        '<div class="tiles">',
+        _tiler(f'{p["n_nao"]:,}'.replace(",", "."), "Não-alunos na extensão", f'{p["pct_nao"]}% do público'),
+        _tiler(f'{benef}%', "Só beneficiários", "público-alvo, não equipe"),
+        _tiler(f'{p["um_so_pct"]}%', "Em 1 só iniciativa", "contato pontual"),
+        _tiler(f'{p["n_alunos"]}', "Alunos (formados)", "para comparação"),
+        "</div>"])
+    secoes = [
+        _secao("Papel na extensão: não-alunos × alunos", svg_papel_comp(a) + texto_publico(a),
+               "Quem é atendido (beneficiário) e quem executa (equipe).",
+               explica="Papel de cada pessoa: público-alvo (beneficiário), equipe de execução "
+               "(executor) ou ambos. Não-aluno = não consta na planilha de formados (inclui "
+               "comunidade externa, docentes/servidores e alunos ainda não formados)."),
+        _secao("Frentes que mais atendem comunidade (cluster temático)",
+               _barras([(c, pct) for c, _, pct in p["cluster_nao"]], unidade="%"),
+               "% de não-alunos distintos alcançados por cada cluster (uma pessoa pode aparecer "
+               "em mais de um)."),
+        _secao("Por área temática (PROEX)",
+               _barras([(c, pct) for c, _, pct in p["area_nao"]], unidade="%"),
+               "% de não-alunos distintos por área temática principal declarada."),
+        _secao("Iniciativas que mais atendem comunidade", tabela_inic_nao(a),
+               "Top iniciativas por nº de não-alunos distintos."),
+        _secao("Recorrência: quantas iniciativas cada pessoa faz",
+               _barras([(g, q) for g, q in p["recorrencia"]]),
+               "A maioria participa de uma só ação — público de contato único (evento/oficina)."),
+        _secao("Novos não-alunos por ano (1ª participação)",
+               _linha(p["por_ano_nao"]),
+               "Ano da primeira participação de cada não-aluno. Queda em 2020–2021 (pandemia) e "
+               "recuperação a partir de 2022."),
+    ]
+    return _doc("Comunidade atendida — Campus Serra", "", "comunidade.html", "Comunidade",
+                "Comunidade atendida pela extensão",
+                "O público não-aluno alcançado pelas ações de Extensão: papel, frentes "
+                "temáticas, iniciativas e recorrência. 'Não-aluno' = não consta como formado; "
+                "casamento por nome — ressalvas de homônimo aplicam.",
+                tiles + "".join(secoes))
+
+
 # ------------------------------------------------------------- orquestração
 def _pagina_temas(cons: dict, slugs: dict, descricoes: dict | None = None) -> str:
     """Página Temas & Clusters: temas do texto das ações × público × coordenadores."""
@@ -1177,8 +1220,9 @@ def gerar_site(
         _pagina_temas(cons, slugs, descrever_temas(cons)), encoding="utf-8")
     try:
         (out / "jornada.html").write_text(_pagina_jornada(cons, str(formandos_dir)), encoding="utf-8")
+        (out / "comunidade.html").write_text(_pagina_comunidade(cons, str(formandos_dir)), encoding="utf-8")
     except Exception as e:
-        print("jornada:", e)
+        print("jornada/comunidade:", e)
 
     # extensionistas (resumos IA vêm do cache gerado por gerar_resumos)
     from .extensionistas import _CACHE_PADRAO, coautoria

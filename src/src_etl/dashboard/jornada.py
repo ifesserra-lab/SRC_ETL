@@ -79,6 +79,8 @@ def agregar_jornada(consolidado: dict, formandos_dir: str | Path = "data/formand
     prim_ext: dict[str, tuple[datetime, str, str, str]] = {}
     pessoa_papel: dict[str, set] = defaultdict(set)   # nome -> {'Público-alvo','Equipe de execução'}
     pessoa_inic: dict[str, set] = defaultdict(set)     # nome -> {títulos de ação}
+    pessoa_clus: dict[str, set] = defaultdict(set)     # nome -> {clusters}
+    pessoa_area: dict[str, set] = defaultdict(set)     # nome -> {áreas temáticas}
     for a in consolidado.get("acoes", []):
         if "extens" not in _norm(a.get("Natureza")):
             continue
@@ -92,6 +94,8 @@ def agregar_jornada(consolidado: dict, formandos_dir: str | Path = "data/formand
                 continue
             pessoa_papel[n].add(p.get("tipo"))
             pessoa_inic[n].add(titulo)
+            pessoa_clus[n].add(cluster)
+            pessoa_area[n].add(area)
             i = _data(p.get("Início"))
             if i and (n not in prim_ext or i < prim_ext[n][0]):
                 prim_ext[n] = (i, titulo, cluster, area)
@@ -176,13 +180,35 @@ def agregar_jornada(consolidado: dict, formandos_dir: str | Path = "data/formand
         tot = sum(c.values()) or 1
         return [(k, c[k], round(c[k] / tot * 100)) for k in ordem_papel if c[k]]
 
+    tot_nao = len(nao_ext) or 1
+
+    def _dist_pessoas(setmap):
+        c = Counter()
+        for n in nao_ext:
+            for x in setmap[n]:
+                c[x] += 1
+        return [(x, q, round(q / tot_nao * 100)) for x, q in c.most_common()]
+
     inic_nao = Counter()
     for n in nao_ext:
         for t in pessoa_inic[n]:
             inic_nao[t] += 1
-    tot_nao = len(nao_ext) or 1
     rec_nao = Counter(len(pessoa_inic[n]) for n in nao_ext)
     um_so = rec_nao.get(1, 0)
+
+    def _grp(k):
+        return "1 iniciativa" if k == 1 else "2" if k == 2 else "3" if k == 3 else "4 ou mais"
+    recg = Counter()
+    for k, q in rec_nao.items():
+        recg[_grp(k)] += q
+    recorrencia = [(g, recg[g]) for g in ["1 iniciativa", "2", "3", "4 ou mais"] if recg[g]]
+
+    ano_nao = Counter()
+    for n in nao_ext:
+        e = prim_ext.get(n)
+        if e:
+            ano_nao[e[0].year] += 1
+    por_ano_nao = [(str(y), ano_nao[y]) for y in sorted(ano_nao)]
 
     publico = {
         "n_pessoas": len(pessoa_inic),
@@ -192,6 +218,10 @@ def agregar_jornada(consolidado: dict, formandos_dir: str | Path = "data/formand
         "papel_nao": _papel_lst(nao_ext),
         "papel_alunos": _papel_lst(alunos_ext),
         "top_inic_nao": [(t, q, round(q / tot_nao * 100)) for t, q in inic_nao.most_common(12)],
+        "cluster_nao": _dist_pessoas(pessoa_clus),
+        "area_nao": _dist_pessoas(pessoa_area),
+        "recorrencia": recorrencia,
+        "por_ano_nao": por_ano_nao,
         "um_so": um_so,
         "um_so_pct": round(um_so / tot_nao * 100),
     }
