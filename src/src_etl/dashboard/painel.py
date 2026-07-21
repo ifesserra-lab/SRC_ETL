@@ -79,13 +79,13 @@ transition:none!important;animation:none!important}}
 /* ---- topbar (menu horizontal superior) ---- */
 .topbar{position:sticky;top:0;z-index:50;background:var(--nav-bg);
 border-bottom:1px solid var(--grid)}
-.topbar-in{max-width:1160px;margin:0 auto;padding:0 20px;height:52px;
+.topbar-in{max-width:1160px;margin:0 auto;padding:7px 20px;min-height:52px;
 display:flex;align-items:center;gap:14px}
 .brand{font-weight:700;font-size:15px;color:var(--text-primary);
 text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:8px}
 .brand::before{content:'';width:10px;height:10px;border-radius:3px;background:var(--series-1)}
 .brand small{color:var(--muted);font-weight:400;font-size:12px}
-.snav{display:flex;gap:2px;overflow-x:auto;flex:1;justify-content:flex-start;
+.snav{display:flex;gap:2px 4px;flex-wrap:wrap;flex:1;justify-content:flex-start;
 scrollbar-width:none}
 .snav::-webkit-scrollbar{display:none}
 .snav a{white-space:nowrap}
