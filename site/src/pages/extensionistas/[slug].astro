@@ -134,7 +134,7 @@ const edges = colab.map((c, i) => [0, i + 1, c.acoes_comuns]);
     {colab.length > 0 && (
       <>
         <p class="section-title">Trabalhou com ({ext.colaboradores.length})</p>
-        <div class="card"><NetworkGraph nodes={nodes} edges={edges} ego /></div>
+        <div class="card"><NetworkGraph nodes={nodes} edges={edges} ego caption={`Tamanho do nó e espessura da linha ∝ ações em comum · ${colab.length} principais de ${ext.colaboradores.length}`} /></div>
         <div style="margin-top:12px">
           <TableFilter placeholder="Filtrar por nome..." total={ext.colaboradores.length} unidade="pessoas">
             <div class="tbl-wrap"><table>

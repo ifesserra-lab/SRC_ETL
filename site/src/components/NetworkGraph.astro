@@ -8,8 +8,9 @@ interface Props {
   edges: number[][]; // [i, j, peso]
   ego?: boolean;
   height?: number;
+  caption?: string;   // nota abaixo do grafo (ex.: "top 12 de 80")
 }
-const { nodes, edges, ego = false, height = 400 } = Astro.props;
+const { nodes, edges, ego = false, height = 400, caption } = Astro.props;
 const W = 1000, H = height;
 const cx = W / 2, cy = H / 2;
 const rx = W / 2 - 130;   // elipse larga → usa a largura
@@ -50,15 +51,20 @@ const primeiroNome = (s: string) => (s || '').split(/\s+/)[0];
             <title>{nome}{grau[idx] ? ` — ${grau[idx]} colaboração(ões)` : ''}</title>
           </circle>
           <text x={pos[idx].x} y={below ? pos[idx].y + r + 15 : pos[idx].y - r - 7}
-            text-anchor="middle" class="ng-lbl" style="pointer-events:none">{primeiroNome(nome)}</text>
+            text-anchor="middle" class="ng-lbl" style="pointer-events:none">
+            {primeiroNome(nome)}{!isCenter && grau[idx] ? <tspan class="ng-w"> ({grau[idx]})</tspan> : null}
+          </text>
         </g>
       );
     })}
   </svg>
+  {caption && <p class="ng-cap">{caption}</p>}
 </div>
 
 <style>
   .ng { overflow-x: auto; }
   .ng svg { display: block; width: 100%; height: auto; }
   .ng :global(text.ng-lbl) { fill: var(--text-2); font-size: 13px; }
+  .ng :global(tspan.ng-w) { fill: var(--muted); font-size: 11px; font-weight: 600; }
+  .ng-cap { color: var(--muted); font-size: 12px; margin: 8px 2px 0; text-align: center; }
 </style>
