@@ -23,9 +23,10 @@ const area = `${padL},${y(min)} ${line} ${x(n - 1)},${y(min)}`;
 const last = data[n - 1];
 // picos = máximos locais (val > vizinho esquerdo e >= direito); rotula o valor no topo.
 // exclui o último ponto (já rotulado). ly evita cortar o rótulo no topo do viewBox.
+// proeminência: ignora bumps pequenos (só máximo local >= 30% do máximo).
 const peaks = data
   .map((_, i) => i)
-  .filter((i) => i > 0 && i < n - 1 && data[i][1] > data[i - 1][1] && data[i][1] >= data[i + 1][1]);
+  .filter((i) => i > 0 && i < n - 1 && data[i][1] > data[i - 1][1] && data[i][1] >= data[i + 1][1] && data[i][1] >= max * 0.3);
 const ly = (v: number) => Math.max(10, y(v) - 9);
 // rótulos do eixo x: primeiro, meio, último
 const ticks = [0, Math.floor((n - 1) / 2), n - 1];
