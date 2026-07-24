@@ -1,10 +1,16 @@
 name: Deploy GitHub Pages (Astro)
 
 # Build do site Astro (site/) consumindo o JSON do ETL em docs/api, e deploy do dist/.
-# NOVO pipeline da migração. Trigger só MANUAL por enquanto — para virar produção:
-#   1. desligar o workflow antigo (pages.yml) — dois deploys de Pages conflitam;
-#   2. trocar este trigger para `push` em branches [main] com paths docs/** e site/**.
+# PRODUÇÃO do GitHub Pages (desde 24/07/2026). O site antigo (pages.yml) foi
+# desligado como deploy automático. Publica em push na main quando muda docs/
+# (JSON do ETL) ou site/ (app Astro). Também dispara manualmente.
 on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "site/**"
+      - ".github/workflows/pages-astro.yml"
   workflow_dispatch:
 
 permissions:
